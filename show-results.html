@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching Results - Invoice GRN System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Burger Menu */
+        .burger-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        .burger-icon {
+            display: flex;
+            flex-direction: column;
+            width: 30px;
+            height: 30px;
+            justify-content: space-between;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .burger-icon span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .burger-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            transition: left 0.3s ease;
+            z-index: 999;
+            padding: 80px 20px 20px;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-menu.active {
+            left: 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            margin: 10px 0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .nav-item:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateX(10px);
+        }
+
+        .nav-item.active {
+            background: rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin: 60px 0 40px 0;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Results Container */
+        .results-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        /* Table Styles */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .results-table th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .results-table th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .results-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e6ed;
+            transition: all 0.3s ease;
+        }
+
+        .results-table tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .clickable {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .clickable:hover {
+            color: #5a67d8;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .status-matched {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-mismatch {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-processing {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge:hover {
+            transform: scale(1.05);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            margin: 0;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .mismatch-details {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .mismatch-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .mismatch-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .mismatch-field {
+            font-weight: 600;
+            color: #dc3545;
+            margin-bottom: 5px;
+        }
+
+        .mismatch-values {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .mismatch-values div {
+            padding: 8px;
+            border-radius: 4px;
+            background: #f8f9fa;
+        }
+
+        .grn-value {
+            border-left: 3px solid #28a745;
+        }
+
+        .invoice-value {
+            border-left: 3px solid #007bff;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #5a67d8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .results-table {
+                font-size: 14px;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 10px 8px;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .results-container {
+                padding: 20px;
+                margin: 0 10px;
+            }
+            
+            .mismatch-values {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Burger Menu -->
+    <div class="burger-menu" onclick="toggleNav()">
+        <div class="burger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="nav-menu" id="navMenu">
+        <a href="main.html" class="nav-item">One Invoice – One GRN</a>
+        <a href="#" class="nav-item" onclick="selectPage('one-multiple')">One Invoice – Multiple GRNs</a>
+        <a href="#" class="nav-item" onclick="selectPage('multiple-one')">One GRN – Multiple Invoices</a>
+    </nav>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Matching Results</h1>
+        <p>View and analyze your invoice-GRN matching results</p>
+    </div>
+
+    <!-- Results Container -->
+    <div class="results-container">
+        <div id="resultsContent">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- File Viewer Modal -->
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="fileModalTitle">File Viewer</h2>
+                <span class="close" onclick="closeModal('fileModal')">&times;</span>
+            </div>
+            <div id="fileContent">
+                <p>📄 File content would be displayed here. In a real implementation, this would show the actual PDF content.</p>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                    <strong>Sample PDF Content:</strong><br>
+                    Document: <span id="fileName"></span><br>
+                    Type: PDF Document<br>
+                    Status: Ready to view
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Details Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="statusModalTitle">Status Details</h2>
+                <span class="close" onclick="closeModal('statusModal')">&times;</span>
+            </div>
+            <div id="statusContent">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample dummy data for demonstration
+        const dummyData = [
+            {
+                case: 'One Invoice – One GRN',
+                grnFile: 'GRN_001_Electronics.pdf',
+                invoiceFile: 'INV_2024_001_TechCorp.pdf',
+                status: 'Matched',
+                datetime: '2024-09-10 14:30:25'
+            },
+            {
+                case: 'One Invoice – Multiple GRNs',
+                grnFile: 'GRN_002_Supplies.pdf',
+                invoiceFile: 'INV_2024_002_SupplyCo.pdf',
+                status: 'Mismatch',
+                datetime: '2024-09-10 13:45:10'
+            },
+            {
+                case: 'One GRN – Multiple Invoices',
+                grnFile: 'GRN_003_Materials.pdf',
+                invoiceFile: 'INV_2024_003_MaterialsInc.pdf',
+                status: 'Processing',
+                datetime: '2024-09-10 15:20:45'
+            }
+        ];
+
+        // Sample mismatch reasons
+        const mismatchReasons = {
+            'GRN_002_Supplies.pdf': [
+                {
+                    field: 'Total Amount',
+                    grnValue: '$1,250.00',
+                    invoiceValue: '$1,275.00',
+                    reason: 'Amount difference of $25.00'
+                },
+                {
+                    field: 'Quantity',
+                    grnValue: '100 units',
+                    invoiceValue: '95 units',
+                    reason: 'Quantity mismatch - 5 units difference'
+                },
+                {
+                    field: 'Item Code',
+                    grnValue: 'ITEM-001',
+                    invoiceValue: 'ITEM-001A',
+                    reason: 'Item code variation detected'
+                }
+            ]
+        };
+
+        function toggleNav() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+
+        function selectPage(pageType) {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+            toggleNav();
+        }
+
+        function loadResults() {
+            // Get data from localStorage (from main page) or use dummy data
+            let results = JSON.parse(localStorage.getItem('matchingResults') || '[]');
+            
+            // If no real data, use dummy data for demonstration
+            if (results.length === 0) {
+                results = dummyData;
+            }
+
+            const resultsContent = document.getElementById('resultsContent');
+
+            if (results.length === 0) {
+                resultsContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <h3>No Results Found</h3>
+                        <p>No matching results available yet. Start a matching process to see results here.</p>
+                        <button class="refresh-btn" onclick="window.location.reload()">Refresh</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Case</th>
+                            <th>GRN File</th>
+                            <th>Invoice File</th>
+                            <th>Status</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            results.forEach((result, index) => {
+                const statusClass = result.status.toLowerCase().replace(' ', '-');
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${result.case}</td>
+                        <td><span class="clickable" onclick="showFile('${result.grnFile}', 'GRN')">${result.grnFile}</span></td>
+                        <td><span class="clickable" onclick="showFile('${result.invoiceFile}', 'Invoice')">${result.invoiceFile}</span></td>
+                        <td><span class="status-badge status-${statusClass}" onclick="showStatus('${result.status}', '${result.grnFile}')">${result.status}</span></td>
+                        <td>10-Sep-2024 03:50 pm (PST)</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            resultsContent.innerHTML = tableHTML;
+        }
+
+        function showFile(fileName, fileType) {
+            document.getElementById('fileModalTitle').textContent = `${fileType} File Viewer`;
+            document.getElementById('fileName').textContent = fileName;
+            document.getElementById('fileModal').style.display = 'block';
+        }
+
+        function showStatus(status, grnFileName) {
+            const statusModalTitle = document.getElementById('statusModalTitle');
+            const statusContent = document.getElementById('statusContent');
+
+            if (status === 'Mismatch') {
+                statusModalTitle.textContent = 'Mismatch Details';
+                
+                const reasons = mismatchReasons[grnFileName] || [
+                    {
+                        field: 'Sample Field',
+                        grnValue: 'Sample GRN Value',
+                        invoiceValue: 'Sample Invoice Value',
+                        reason: 'Sample mismatch reason'
+                    }
+                ];
+
+                let contentHTML = '<div class="mismatch-details">';
+                contentHTML += '<h3 style="margin-bottom: 15px; color: #dc3545;">❌ Mismatch Found</h3>';
+                contentHTML += '<p style="margin-bottom: 20px; color: #666;">The following discrepancies were found between the GRN and Invoice:</p>';
+
+                reasons.forEach(reason => {
+                    contentHTML += `
+                        <div class="mismatch-item">
+                            <div class="mismatch-field">${reason.field}</div>
+                            <div class="mismatch-values">
+                                <div class="grn-value">
+                                    <strong>GRN:</strong> ${reason.grnValue}
+                                </div>
+                                <div class="invoice-value">
+                                    <strong>Invoice:</strong> ${reason.invoiceValue}
+                                </div>
+                            </div>
+                            <div style="margin-top: 8px; font-size: 13px; color: #666; font-style: italic;">
+                                ${reason.reason}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                contentHTML += '</div>';
+                statusContent.innerHTML = contentHTML;
+            } else if (status === 'Matched') {
+                statusModalTitle.textContent = 'Match Details';
+                statusContent.innerHTML = `
+                    <div style="text-align: center; padding: 20px; background: #d4edda; border-radius: 8px; color: #155724;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
+                        <h3>Perfect Match!</h3>
+                        <p style="margin-top: 10px;">All fields in the GRN and Invoice match perfectly. No discrepancies found.</p>
+                    </div>
+                `;
+            } else if (status === 'Processing') {
+                statusModalTitle.textContent = 'Processing Status';
+                statusContent.innerHTML = `
+                    <div style="text-align: center; padding: 20px; background: #fff3cd; border-radius: 8px; color: #856404;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
+                        <h3>Processing in Progress</h3>
+                        <p style="margin-top: 10px;">The matching process is currently running. Please check back in a few minutes.</p>
+                        <button class="refresh-btn" onclick="window.location.reload()" style="margin-top: 15px;">Refresh Results</button>
+                    </div>
+                `;
+            }
+
+            document.getElementById('statusModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const fileModal = document.getElementById('fileModal');
+            const statusModal = document.getElementById('statusModal');
+            
+            if (event.target === fileModal) {
+                fileModal.style.display = 'none';
+            }
+            if (event.target === statusModal) {
+                statusModal.style.display = 'none';
+            }
+        }
+
+        // Close nav when clicking outside
+        document.addEventListener('click', function(event) {
+            const navMenu = document.getElementById('navMenu');
+            const burgerMenu = document.querySelector('.burger-menu');
+            
+            if (!navMenu.contains(event.target) && !burgerMenu.contains(event.target)) {
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Load results when page loads
+        document.addEventListener('DOMContentLoaded', loadResults);
+    </script>
+</body>
+</html>
