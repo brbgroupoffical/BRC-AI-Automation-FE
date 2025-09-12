@@ -23,7 +23,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/scenarios" replace />} />
+          <Route path="/" element={<Navigate to="/scenarios/one-to-one" replace />} />
         </Routes>
       </div>
     </AuthProvider>
