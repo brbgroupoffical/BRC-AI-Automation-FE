@@ -6,30 +6,32 @@ import { useAuth } from "../contexts/AuthContext"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-
+import { useNavigate } from "react-router-dom"
 export default function Login() {
+  const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-  const { login, isAuthenticated } = useAuth()
+  const { login } = useAuth()
 
-  if (isAuthenticated) {
-    return <Navigate to="/scenarios/one-to-one" replace />
-  }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
+    try {
+      const result = await login(email, password)
+      if (!result.success) {
+        setError(result.error)
+      }
+      setIsLoading(false)
+      navigate("/scenarios/one-to-one") 
 
-    const result = await login(email, password)
-
-    if (!result.success) {
-      setError(result.error)
+    } catch (error) {
+      console.log(error)
     }
-
-    setIsLoading(false)
   }
 
   return (

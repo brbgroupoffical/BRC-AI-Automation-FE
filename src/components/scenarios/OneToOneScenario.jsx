@@ -26,7 +26,6 @@ export default function OneToOneScenario() {
 
     showToast(`Started matching for "${uploadedFile.name}"`, "success", 4000)
 
-    // Create new task with unique ID
     const newTaskId = taskCounter + 1
     setTaskCounter(newTaskId)
 
@@ -38,18 +37,11 @@ export default function OneToOneScenario() {
       startTime: new Date(),
       progress: 0,
     }
-
-    // Add task to processing queue (background only)
     setProcessingTasks((prev) => [...prev, newTask])
-
-    // Clear uploaded file to allow new uploads
     setUploadedFile(null)
-
-    // Simulate API call to start processing
     try {
       console.log("[v0] Starting AP invoice processing for:", uploadedFile.name, "Task ID:", newTaskId)
 
-      // Simulate progress updates
       const progressInterval = setInterval(() => {
         setProcessingTasks((prev) =>
           prev.map((task) =>
@@ -58,7 +50,6 @@ export default function OneToOneScenario() {
         )
       }, 500)
 
-      // Simulate async processing completion
       setTimeout(
         () => {
           clearInterval(progressInterval)
@@ -70,7 +61,7 @@ export default function OneToOneScenario() {
           console.log("[v0] Processing completed for task:", newTaskId)
         },
         3000 + Math.random() * 2000,
-      ) // Random completion time between 3-5 seconds
+      )
     } catch (error) {
       console.error("[v0] Processing error:", error)
       setProcessingTasks((prev) =>
