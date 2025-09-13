@@ -8,7 +8,6 @@ export default function ProtectedRoute() {
     if (!isAuthenticated) {
       return <Navigate to="/" replace />
     }
-
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />

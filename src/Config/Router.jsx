@@ -15,7 +15,7 @@ export default function Router() {
   else {
     <Navigate to={'/'} />
   }
-
+  
   return (
     <Routes>
       <Route path="/" element={<Login />} />
