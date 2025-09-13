@@ -1,22 +1,24 @@
 import { useState } from "react"
-import { Navigate, Link } from "react-router-dom"
+import { Navigate, Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { useToast } from "../components/ui/toast"
 
-export default function Login() {
+export default function Register() {
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [password1, setPassword1] = useState("")
+  const [password2, setPassword2] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-  const { login, isAuthenticated } = useAuth()
+  const { register, isAuthenticated } = useAuth()
   const { showToast, ToastContainer } = useToast()
+  const navigate = useNavigate()
 
   if (isAuthenticated) {
-    return <Navigate to="/scenarios/one-to-one" replace />
+    return <Navigate to="/scenarios" replace />
   }
 
   const handleSubmit = async (e) => {
@@ -24,25 +26,37 @@ export default function Login() {
     setIsLoading(true)
     setError("")
 
-    const result = await login(username, email, password)
-
-    if (result.success) {
-      showToast("Login successful!", "success")
-    } else {
-      if (result.errors && result.errors.length > 0) {
-        result.errors.forEach((err) => {
-          showToast(err, "error")
-          console.error("Login error:", err)
-        })
-        setError(result.errors.join(", "))
-      } else {
-        showToast("Login failed", "error")
-        console.error("Unknown login error:", result)
-        setError("Login failed")
-      }
+    if (password1 !== password2) {
+      setError("Passwords do not match")
+      setIsLoading(false)
+      return
     }
 
-    setIsLoading(false)
+    if (password1.length < 8) {
+      setError("Password must be at least 8 characters long")
+      setIsLoading(false)
+      return
+    }
+
+    const result = await register(username, email, password1, password2)
+
+if (result.success) {
+  showToast("Account created successfully!", "success")
+  navigate("/") // redirect to login
+} else {
+  if (result.errors && result.errors.length > 0) {
+    result.errors.forEach((err) => {
+      showToast(err, "error")
+      console.error("Register error:", err)
+    })
+    setError(result.errors.join(", "))
+  } else {
+    showToast("Registration failed", "error")
+    console.error("Unknown register error:", result)
+    setError("Registration failed")
+  }
+}
+
   }
 
   return (
@@ -53,12 +67,11 @@ export default function Login() {
           <div className="flex justify-center mb-4">
             <img src="/assets/brc-logo.png" alt="BRC Logo" className="h-16 w-auto" />
           </div>
-          <CardTitle className="text-2xl font-bold text-green-700">BRC AP Invoice System</CardTitle>
-          <p className="text-sm text-muted-foreground">Sign in to access your account</p>
+          <CardTitle className="text-2xl font-bold text-green-700">Create Account</CardTitle>
+          <p className="text-sm text-muted-foreground">Register for BRC AP Invoice System</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Username field */}
             <div className="space-y-2">
               <label htmlFor="username" className="text-sm font-medium">
                 Username
@@ -73,7 +86,6 @@ export default function Login() {
                 className="focus:ring-green-500 focus:border-green-500"
               />
             </div>
-            {/* Email field */}
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
@@ -88,29 +100,42 @@ export default function Login() {
                 className="focus:ring-green-500 focus:border-green-500"
               />
             </div>
-            {/* Password field */}
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
+              <label htmlFor="password1" className="text-sm font-medium">
                 Password
               </label>
               <Input
-                id="password"
+                id="password1"
                 type="password"
                 placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={password1}
+                onChange={(e) => setPassword1(e.target.value)}
+                required
+                className="focus:ring-green-500 focus:border-green-500"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="password2" className="text-sm font-medium">
+                Confirm Password
+              </label>
+              <Input
+                id="password2"
+                type="password"
+                placeholder="Confirm your password"
+                value={password2}
+                onChange={(e) => setPassword2(e.target.value)}
                 required
                 className="focus:ring-green-500 focus:border-green-500"
               />
             </div>
             {error && <div className="text-sm text-red-600 bg-red-50 p-2 rounded">{error}</div>}
             <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
             <div className="text-center text-sm">
-              <span className="text-muted-foreground">Don't have an account? </span>
-              <Link to="/register" className="text-green-600 hover:text-green-700 font-medium">
-                Create account
+              <span className="text-muted-foreground">Already have an account? </span>
+              <Link to="/" className="text-green-600 hover:text-green-700 font-medium">
+                Sign in
               </Link>
             </div>
           </form>

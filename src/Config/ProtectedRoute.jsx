@@ -1,13 +1,19 @@
-import { Outlet } from "react-router-dom"
+import { Outlet, Navigate } from "react-router-dom"
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import { useAuth } from "../contexts/AuthContext"
-import { Navigate } from "react-router-dom"
+
 export default function ProtectedRoute() {
-    const { isAuthenticated } = useAuth()
-    if (!isAuthenticated) {
-      return <Navigate to="/" replace />
-    }
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div> // ✅ wait
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />
+  }
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />

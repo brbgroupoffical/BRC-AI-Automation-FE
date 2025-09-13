@@ -6,6 +6,10 @@ import { Button } from "../ui/button"
 import FileUpload from "../FileUpload"
 import { Play, Eye, Upload } from "lucide-react"
 import { useToast } from "../ui/toast"
+import { MatchingModal } from "../fileMatchingModal"
+import { useUploadPdf } from "../../hooks/useUploadPdf"
+
+
 
 export default function OneToOneScenario() {
   const [uploadedFile, setUploadedFile] = useState(null)
@@ -13,74 +17,53 @@ export default function OneToOneScenario() {
   const [taskCounter, setTaskCounter] = useState(0)
   const navigate = useNavigate()
   const { showToast, ToastContainer } = useToast()
+    const { uploadPdf, isUploading } = useUploadPdf()
+
+const [showModal, setShowModal] = useState(false)
 
   const handleFileUpload = (file) => {
     setUploadedFile(file)
   }
 
-  const handleStartMatching = async () => {
+     const handleStartMatching = async () => {
     if (!uploadedFile) {
-      alert("Please upload a PDF file first")
+      showToast("Please upload a PDF file first", "error")
       return
     }
 
-    showToast(`Started matching for "${uploadedFile.name}"`, "success", 4000)
+    setShowModal(true)
 
-    const newTaskId = taskCounter + 1
-    setTaskCounter(newTaskId)
+    const result = await uploadPdf(uploadedFile)
 
-    const newTask = {
-      id: newTaskId,
-      fileName: uploadedFile.name,
-      fileSize: uploadedFile.size,
-      status: "processing",
-      startTime: new Date(),
-      progress: 0,
+    if (!result.success) {
+      console.error("Upload failed:", result.errors || result.error)
+      return
     }
-    setProcessingTasks((prev) => [...prev, newTask])
-    setUploadedFile(null)
-    try {
-      console.log("[v0] Starting AP invoice processing for:", uploadedFile.name, "Task ID:", newTaskId)
 
-      const progressInterval = setInterval(() => {
-        setProcessingTasks((prev) =>
-          prev.map((task) =>
-            task.id === newTaskId ? { ...task, progress: Math.min(task.progress + Math.random() * 20, 90) } : task,
-          ),
-        )
-      }, 500)
-
-      setTimeout(
-        () => {
-          clearInterval(progressInterval)
-          setProcessingTasks((prev) =>
-            prev.map((task) =>
-              task.id === newTaskId ? { ...task, status: "completed", progress: 100, endTime: new Date() } : task,
-            ),
-          )
-          console.log("[v0] Processing completed for task:", newTaskId)
-        },
-        3000 + Math.random() * 2000,
-      )
-    } catch (error) {
-      console.error("[v0] Processing error:", error)
-      setProcessingTasks((prev) =>
-        prev.map((task) => (task.id === newTaskId ? { ...task, status: "error", error: error.message } : task)),
-      )
-    }
+    console.log("Upload success:", result.data)
+    // TODO: handle successful processing response
   }
 
   const handleShowResults = () => {
     navigate("/results")
   }
 
+
+
   return (
     <div className="space-y-6">
       <ToastContainer />
 
+
+<MatchingModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        fileName={uploadedFile?.name}
+        onShowResults={handleShowResults}
+      />
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">1:1 AP Invoice Processing</h2>
+          <h2 className="text-3xl font-bold text-gray-900"> AP Invoice Processing</h2>
           <p className="text-gray-600 mt-2">Upload and process invoice documents for one-to-one matching</p>
         </div>
       </div>
@@ -109,11 +92,11 @@ export default function OneToOneScenario() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Button
-              onClick={handleStartMatching}
-              disabled={!uploadedFile}
-              className="w-full bg-green-600 hover:bg-green-700 text-white"
-              size="lg"
-            >
+        onClick={handleStartMatching}
+        disabled={!uploadedFile || isUploading}
+        className="w-full bg-green-600 hover:bg-green-700 text-white"
+        size="lg"
+      >
               <div className="flex items-center space-x-2">
                 <Play className="w-4 h-4" />
                 <span>Start Matching</span>

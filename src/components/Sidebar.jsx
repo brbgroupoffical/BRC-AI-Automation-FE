@@ -1,8 +1,8 @@
+import { Link, useLocation, useNavigate } from "react-router-dom"
 
-import { Link, useLocation } from "react-router-dom"
 import { ArrowRightLeft, ArrowUpRight, ArrowDownLeft, BarChart3, Settings, LogOut, User } from "lucide-react"
 import { cn } from "../lib/utils"
-
+import { useToast } from "./ui/toast"
 import { useAuth } from "../contexts/AuthContext"
 import { Button } from "./ui/button"
 
@@ -54,7 +54,21 @@ const otherItems = [
 
 export default function Sidebar() {
   const location = useLocation()
+  const navigate = useNavigate()
+  
 const { user, logout } = useAuth()
+
+ const handleLogout = async () => {
+  const result = await logout()
+  if (result.success) {
+    toast({ title: "Logged out successfully!" })
+    navigate("/login")   // ⬅️ redirect to login
+  } else {
+    toast({ title: "Logout failed", variant: "destructive" })
+  }
+}
+
+
 
   const NavItem = ({ item, isActive }) => (
     <div className="relative group">
@@ -129,7 +143,7 @@ const { user, logout } = useAuth()
         {/* Logout */}
         <div className="relative group">
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="flex items-center justify-center w-12 h-12 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600"
           >
             <LogOut className="w-5 h-5" />
