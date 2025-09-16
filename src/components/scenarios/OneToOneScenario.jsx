@@ -25,24 +25,25 @@ const [showModal, setShowModal] = useState(false)
     setUploadedFile(file)
   }
 
-     const handleStartMatching = async () => {
-    if (!uploadedFile) {
-      showToast("Please upload a PDF file first", "error")
-      return
-    }
-
-    setShowModal(true)
-
-    const result = await uploadPdf(uploadedFile)
-
-    if (!result.success) {
-      console.error("Upload failed:", result.errors || result.error)
-      return
-    }
-
-    console.log("Upload success:", result.data)
-    // TODO: handle successful processing response
+   const handleStartMatching = async () => {
+  if (!uploadedFile) {
+    showToast("Please upload a PDF file first", "error")
+    return
   }
+
+  // ✅ Step 1: Call API
+  const result = await uploadPdf(uploadedFile)
+
+  // ✅ Step 2: Success → open modal
+  if (result.success) {
+    setShowModal(true)
+    setUploadedFile(null) // clear after successful upload
+  } else {
+    // ❌ Error already handled in toast inside hook
+    console.error("Upload failed:", result.errors || result.error)
+  }
+}
+
 
   const handleShowResults = () => {
     navigate("/results")
