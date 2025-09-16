@@ -20,7 +20,7 @@ export function useUploadPdf() {
 
       const accessToken = localStorage.getItem("accessToken")
 
-      const response = await fetch(ENDPOINTS.UPLOAD_PDF, {
+      const response = await fetch(ENDPOINTS.GRN_UPLOAD, {
         method: "POST",
         headers: {
           Authorization: accessToken ? `Bearer ${accessToken}` : "",

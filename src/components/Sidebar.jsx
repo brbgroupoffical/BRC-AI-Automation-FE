@@ -55,16 +55,17 @@ const otherItems = [
 export default function Sidebar() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { showToast, ToastContainer } = useToast()
   
 const { user, logout } = useAuth()
 
  const handleLogout = async () => {
   const result = await logout()
   if (result.success) {
-    toast({ title: "Logged out successfully!" })
-    navigate("/login")   // ⬅️ redirect to login
+    showToast({ title: "Logged out successfully!" })
+    navigate("/login")   
   } else {
-    toast({ title: "Logout failed", variant: "destructive" })
+    showToast({ title: "Logout failed", variant: "destructive" })
   }
 }
 
@@ -103,6 +104,8 @@ const { user, logout } = useAuth()
   )
 
   return (
+
+    
     <div className="w-20 bg-white border-r border-gray-200 flex flex-col">
       {/* Logo */}
       <div className="flex items-center justify-center h-16 border-b border-gray-200">
@@ -129,7 +132,7 @@ const { user, logout } = useAuth()
 
           <div className="flex flex-col items-center space-y-2 p-2">
         {/* User (email tooltip) */}
-        <div className="relative group">
+        {/* <div className="relative group">
           <div className="flex items-center justify-center w-12 h-12 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600">
             <User className="w-5 h-5" />
           </div>
@@ -138,7 +141,7 @@ const { user, logout } = useAuth()
             <div className="text-xs text-gray-300">{user?.email}</div>
             <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 border-4 border-transparent border-r-gray-900"></div>
           </div>
-        </div>
+        </div> */}
 
         {/* Logout */}
         <div className="relative group">
