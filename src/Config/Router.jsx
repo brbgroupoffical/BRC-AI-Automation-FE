@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom"
 import ResultsPage from "../components/ResultsPage"
-import ManyToOneScenario from "../components/scenarios/ManyToOneScenario"
+import ManyToManyScenario from "../components/scenarios/ManyToManyScenario"
 import OneToManyScenario from "../components/scenarios/OneToManyScenario"
 import OneToOneScenario from "../components/scenarios/OneToOneScenario"
 import Register from "../pages/Register"
@@ -18,7 +18,7 @@ export default function Router() {
       <Route element={<ProtectedRoute />}>
         <Route path="/scenarios/one-to-one" element={<OneToOneScenario />} />
         <Route path="/scenarios/one-to-many" element={<OneToManyScenario />} />
-        <Route path="/scenarios/many-to-one" element={<ManyToOneScenario />} />
+        <Route path="/scenarios/many-to-many" element={<ManyToManyScenario />} />
         <Route path="/results" element={<ResultsPage />} />
       </Route>
     </Routes>

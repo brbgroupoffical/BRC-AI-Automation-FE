@@ -1,21 +1,20 @@
-"use client"
 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
 import FileUpload from "../FileUpload"
-import { Play, Eye, FileText, ArrowUpRight } from "lucide-react"
+import { Play, Eye, FileText, ArrowDownLeft } from "lucide-react"
 import { useToast } from "../ui/toast"
 import { MatchingModal } from "../fileMatchingModal"
-import { useUploadPdfOneToMany } from "../../hooks/useUploadPdfOneToMany"
+import { useUploadPdfManyToMany } from "../../hooks/useUploadPdfManyToMany"
 
-export default function OneToManyScenario() {
+export default function ManyToManyScenario() {
   const [uploadedFile, setUploadedFile] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
   const { showToast, ToastContainer } = useToast()
-  const { uploadPdf, isUploading } = useUploadPdfOneToMany()
+  const { uploadPdf, isUploading } = useUploadPdfManyToMany()
 
   const handleFileUpload = (file) => {
     if (!file) {
@@ -47,7 +46,7 @@ export default function OneToManyScenario() {
 
       setTimeout(() => {
         setShowModal(true)
-      }, 1500)
+      }, 4000)
     } else {
       const errorMsg = result.error || result.data?.detail || "Upload failed. Please try again."
       showToast(errorMsg, "error")
@@ -73,10 +72,10 @@ export default function OneToManyScenario() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
-            <ArrowUpRight className="w-8 h-8 text-green-600" />
-            <span>1:Many AP Invoice Processing</span>
+            <ArrowDownLeft className="w-8 h-8 text-green-600" />
+            <span>Many:Many AP Invoice Processing</span>
           </h2>
-          <p className="text-gray-600 mt-2">Upload and process one invoice against multiple GRNs</p>
+          <p className="text-gray-600 mt-2">Upload and process multiple invoices against one GRN</p>
         </div>
       </div>
 
@@ -121,7 +120,7 @@ export default function OneToManyScenario() {
                 ) : (
                   <div className="flex items-center space-x-2">
                     <Play className="w-4 h-4" />
-                    <span>Start 1:Many Matching</span>
+                    <span>Start Many:Many Matching</span>
                   </div>
                 )}
               </Button>

@@ -3,11 +3,15 @@
 import { useState, useRef } from "react"
 import { Upload, File, X } from "lucide-react"
 import { cn } from "../lib/utils"
+import { useToast } from "./ui/toast"
+
 
 export default function FileUpload({ onFileUpload, acceptedTypes = ".pdf", maxSize = 10, label = "Upload File" }) {
   const [isDragOver, setIsDragOver] = useState(false)
   const [uploadedFile, setUploadedFile] = useState(null)
   const fileInputRef = useRef(null)
+
+const { showToast, ToastContainer } = useToast()
 
   const handleDragOver = (e) => {
     e.preventDefault()
@@ -31,7 +35,7 @@ export default function FileUpload({ onFileUpload, acceptedTypes = ".pdf", maxSi
 
   const handleFileSelection = (file) => {
     if (file.size > maxSize * 1024 * 1024) {
-      alert(`File size must be less than ${maxSize}MB`)
+      showToast(`File size must be less than ${maxSize}MB`)
       return
     }
 
@@ -65,6 +69,7 @@ export default function FileUpload({ onFileUpload, acceptedTypes = ".pdf", maxSi
 
   return (
     <div className="space-y-4">
+      <ToastContainer />
       <div
         className={cn(
           "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all duration-200",

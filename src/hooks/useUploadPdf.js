@@ -31,27 +31,50 @@ export function useUploadPdf() {
       const data = await response.json()
       console.log("Upload API response:", data)
 
-      if (!response.ok) {
-        const errors = []
-        if (typeof data === "object") {
-          if (data.detail) errors.push(data.detail)
-          Object.keys(data).forEach((field) => {
-            if (Array.isArray(data[field])) {
-              data[field].forEach((msg) => errors.push(`${field}: ${msg}`))
-            } else if (typeof data[field] === "string") {
-              errors.push(`${field}: ${data[field]}`)
-            }
-          })
-        }
-        errors.forEach((msg) => showToast(msg, "error"))
-        return { success: false, errors }
-      }
+if (response.status === 401) {
+  if (Array.isArray(data?.messages)) {
+    const expiredMsg = data.messages.find(
+      (msg) => msg?.message?.toLowerCase().includes("expired")
+    )
+    if (expiredMsg) {
+      showToast(`message: ${expiredMsg.message}`, "error")
+      return { success: false, error: expiredMsg.message }
+    }
+  }
 
-      showToast("PDF uploaded successfully!", "success")
-      return { success: true, data }
+  // fallback if no messages array
+  if (data?.detail) {
+    showToast(data.detail, "error")
+    return { success: false, error: data.detail }
+  }
+}
+
+      if (!response.ok) {
+  const errors = []
+  if (typeof data === "object") {
+    if (data.detail) errors.push(data.detail)
+    Object.keys(data).forEach((field) => {
+      if (Array.isArray(data[field])) {
+        data[field].forEach((msg) => errors.push(`${field}: ${msg}`))
+      } else if (typeof data[field] === "string") {
+        errors.push(`${field}: ${data[field]}`)
+      }
+    })
+  }
+  errors.forEach((msg) => showToast(msg, "error"))
+  return { success: false, errors }
+}
+
+      
+if (response.ok) {
+  const successMsg = data?.message || "PDF uploaded successfully!"
+  showToast(successMsg, "success")
+  return { success: true, data }
+}
+
     } catch (error) {
       console.error("Upload API error:", error)
-      showToast(error.message, "error")
+      showToast(error.message, "error" )
       return { success: false, error: error.message }
     } finally {
       setIsUploading(false)

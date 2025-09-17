@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect  } from "react"
 import { ENDPOINTS } from "../utils/endpoint"
-
+import { useToast } from "../components/ui/toast"
 const AuthContext = createContext()
 
 export function useAuth() {
@@ -152,7 +152,27 @@ const logout = async () => {
 
     console.log("Logout API response:", data)
 
+    // 🔐 Handle unauthorized with token expired
+    if (response.status === 401) {
+      if (Array.isArray(data?.messages)) {
+        const expiredMsg = data.messages.find(
+          (msg) => msg?.message?.toLowerCase().includes("expired")
+        )
+        if (expiredMsg) {
+          showToast(`message: ${expiredMsg.message}`, "error")
+          return { success: false, error: expiredMsg.message }
+        }
+      }
+
+      if (data?.detail) {
+        showToast(data.detail, "error")
+        return { success: false, error: data.detail }
+      }
+    }
+
+    // ❌ Generic failure
     if (!response.ok) {
+      showToast(data?.detail || "Logout failed", "error")
       return { success: false, errors: [data?.detail || "Logout failed"] }
     }
 

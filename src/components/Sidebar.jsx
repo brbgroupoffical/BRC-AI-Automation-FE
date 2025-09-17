@@ -16,22 +16,22 @@ const scenarios = [
     description: "One-to-One Invoice Matching",
     available: true,
   },
-  // {
-  //   id: "one-to-many",
-  //   name: "1:Many AP Invoice",
-  //   icon: ArrowUpRight,
-  //   path: "/scenarios/one-to-many",
-  //   description: "One-to-Many Invoice Matching",
-  //   available: false,
-  // },
-  // {
-  //   id: "many-to-one",
-  //   name: "Many:1 AP Invoice",
-  //   icon: ArrowDownLeft,
-  //   path: "/scenarios/many-to-one",
-  //   description: "Many-to-One Invoice Matching",
-  //   available: false,
-  // },
+  {
+    id: "one-to-many",
+    name: "1:Many AP Invoice",
+    icon: ArrowUpRight,
+    path: "/scenarios/one-to-many",
+    description: "One-to-Many Invoice Matching",
+    available: true,
+  },
+  {
+    id: "many-to-one",
+    name: "Many:1 AP Invoice",
+    icon: ArrowDownLeft,
+    path: "/scenarios/many-to-many",
+    description: "Many-to-Many Invoice Matching",
+    available: true,
+  },
 ]
 
 const otherItems = [
@@ -107,6 +107,7 @@ const { user, logout } = useAuth()
 
     
     <div className="w-20 bg-white border-r border-gray-200 flex flex-col">
+      <ToastContainer />
       {/* Logo */}
       <div className="flex items-center justify-center h-16 border-b border-gray-200">
         <img src="/assets/brc-logo.png" alt="BRC" className="h-8 w-auto" />
