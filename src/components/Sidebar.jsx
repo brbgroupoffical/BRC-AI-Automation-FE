@@ -26,10 +26,10 @@ const scenarios = [
   },
   {
     id: "many-to-one",
-    name: "Many:Many AP Invoice",
+    name: "Many:1 AP Invoice",
     icon: ArrowDownLeft,
-    path: "/scenarios/many-to-many",
-    description: "Many-to-Many Invoice Matching",
+    path: "/scenarios/many-to-one",
+    description: "Many-to-One Invoice Matching",
     available: true,
   },
 ]

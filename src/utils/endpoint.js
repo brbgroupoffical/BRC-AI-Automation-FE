@@ -10,5 +10,8 @@ export const ENDPOINTS = {
 
   GRN_UPLOAD: `${API_BASE_URL}automation/upload/one-to-one/`,
   GRN_UPLOAD_ONETOMANY: `${API_BASE_URL}automation/upload/one-to-many/`,
-  GRN_UPLOAD_MANYTOMANY: `${API_BASE_URL}automation/upload/many-to-many/`
+  GRN_UPLOAD_MANYTOMANY: `${API_BASE_URL}automation/upload/many-to-many/`,
+
+
+  AUTOMATION_RESULT: `${API_BASE_URL}automation/automation-details/`
 }

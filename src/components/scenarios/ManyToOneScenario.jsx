@@ -9,7 +9,7 @@ import { useToast } from "../ui/toast"
 import { MatchingModal } from "../fileMatchingModal"
 import { useUploadPdfManyToMany } from "../../hooks/useUploadPdfManyToMany"
 
-export default function ManyToManyScenario() {
+export default function ManyToOneScenario() {
   const [uploadedFile, setUploadedFile] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
@@ -73,7 +73,7 @@ export default function ManyToManyScenario() {
         <div>
           <h2 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
             <ArrowDownLeft className="w-8 h-8 text-green-600" />
-            <span>Many:Many AP Invoice Processing</span>
+            <span>Many:1 AP Invoice Processing</span>
           </h2>
           <p className="text-gray-600 mt-2">Upload and process multiple invoices against one GRN</p>
         </div>
@@ -120,7 +120,7 @@ export default function ManyToManyScenario() {
                 ) : (
                   <div className="flex items-center space-x-2">
                     <Play className="w-4 h-4" />
-                    <span>Start Many:Many Matching</span>
+                    <span>Start Many:1 Matching</span>
                   </div>
                 )}
               </Button>
