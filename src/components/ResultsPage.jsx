@@ -7,7 +7,8 @@ import { CheckCircle, Clock, AlertCircle, FileText, Eye, RefreshCw, X, Loader2 }
 import { Toast, useToast } from "../components/ui/toast"
 
 export default function ResultsPage() {
-  const { results, loading, error, refetch } = useAutomationResults()
+    const { results, loading, error, refetch, next, previous, fetchPage } = useAutomationResults()
+
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [selectedResult, setSelectedResult] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -77,7 +78,7 @@ const { showToast ,ToastContainer } = useToast()
 
 const formatScenario = (scenario) => {
   if (!scenario) return "N/A"
-  return scenario.replaceAll("_", " ").toUpperCase()
+  return scenario.replaceAll("_", "-").toUpperCase()
 }
 
 
@@ -101,7 +102,7 @@ const formatScenario = (scenario) => {
         </Button>
       </div>
 
-      {error && <p className="text-red-600">⚠️ {error}</p>}
+      {/* {error && <p className="text-red-600">⚠️ {error}</p>} */}
 
       <Card>
         <CardHeader>
@@ -138,7 +139,7 @@ const formatScenario = (scenario) => {
                     <tr key={result.id} className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="py-4 px-4 text-gray-900">{index + 1}</td>
                       <td className="py-4 px-4">
-                        <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-md">
+                        <span className="px-2 py-1 text-xs font-medium  text-green-800 rounded-md">
                           {formatScenario(result.scenario)}
                         </span>
                       </td>
@@ -200,6 +201,25 @@ const formatScenario = (scenario) => {
               <p className="text-gray-600">Upload and process files to see results here</p>
             </div>
           )}
+           {/* Pagination Controls */}
+      <div className="flex  items-center justify-end mt-4 space-x-2">
+        <Button
+          onClick={() => previous && fetchPage(previous)}
+          disabled={!previous}
+          variant="outline"
+          size="sm"
+        >
+          Previous
+        </Button>
+        <Button
+          onClick={() => next && fetchPage(next)}
+          disabled={!next}
+          variant="outline"
+          size="sm"
+        >
+          Next
+        </Button>
+      </div>
         </CardContent>
       </Card>
 

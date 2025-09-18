@@ -6,14 +6,17 @@ export function useAutomationResults() {
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [count, setCount] = useState(0)
+  const [next, setNext] = useState(null)
+  const [previous, setPrevious] = useState(null)
   const { showToast } = useToast()
 
-  const fetchResults = async (showToastOnSuccess = false) => {
+  const fetchResults = async (url = ENDPOINTS.AUTOMATION_RESULT, showToastOnSuccess = false) => {
     try {
       setLoading(true)
       const accessToken = localStorage.getItem("accessToken")
 
-      const res = await fetch(ENDPOINTS.AUTOMATION_RESULT, {
+      const res = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -21,12 +24,9 @@ export function useAutomationResults() {
         },
       })
 
-      // 🔐 Handle Unauthorized (token expired)
       if (res.status === 401) {
         localStorage.removeItem("accessToken")
         showToast("Session expired, please log in again", "error")
-
-        // optional redirect
         window.location.href = "/login"
         return
       }
@@ -34,11 +34,11 @@ export function useAutomationResults() {
       if (!res.ok) throw new Error(`Error ${res.status}`)
       const data = await res.json()
 
-      // 🔹 Map API response → table-friendly objects
-      const formatted = data.map(item => ({
+      // map results
+      const formatted = data.results.map(item => ({
         id: item.id,
         fileName: item.filename,
-        scenario: item.case_type, // e.g. "one_to_one"
+        scenario: item.case_type,
         scenarioName: item.case_type?.replaceAll("_", " ") || "N/A",
         status: item.steps?.[0]?.status || item.status,
         message: item.steps?.[0]?.message || "No message available",
@@ -46,11 +46,12 @@ export function useAutomationResults() {
       }))
 
       setResults(formatted)
+      setCount(data.count)
+      setNext(data.next)
+      setPrevious(data.previous)
       setError(null)
 
-      if (showToastOnSuccess) {
-        showToast("Results refreshed successfully", "success")
-      }
+      if (showToastOnSuccess) showToast("Results refreshed successfully", "success")
     } catch (err) {
       setError(err.message)
       showToast(`Failed to fetch results: ${err.message}`, "error")
@@ -61,9 +62,20 @@ export function useAutomationResults() {
 
   useEffect(() => {
     fetchResults()
-    const interval = setInterval(() => fetchResults(), 20 * 60 * 1000) // every 20 mins
+    const interval = setInterval(() => fetchResults(), 20 * 60 * 1000)
+    //   const interval = setInterval(() => fetchResults(), 10 * 1000)
+
     return () => clearInterval(interval)
   }, [])
 
-  return { results, loading, error, refetch: () => fetchResults(true) }
+  return {
+    results,
+    loading,
+    error,
+    count,
+    next,
+    previous,
+    refetch: () => fetchResults(ENDPOINTS.AUTOMATION_RESULT, true),
+    fetchPage: (url) => fetchResults(url, false),
+  }
 }
