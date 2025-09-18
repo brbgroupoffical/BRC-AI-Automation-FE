@@ -27,7 +27,7 @@ export function useAutomationResults() {
       if (res.status === 401) {
         localStorage.removeItem("accessToken")
         showToast("Session expired, please log in again", "error")
-        window.location.href = "/login"
+        window.location.href = "/"
         return
       }
 
