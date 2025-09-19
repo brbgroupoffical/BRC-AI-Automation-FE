@@ -49,18 +49,22 @@ if (response.status === 401) {
   }
 }
 
-      if (!response.ok) {
+ if (!response.ok) {
   const errors = []
+
   if (typeof data === "object") {
+    if (data.message) errors.push(data.message) // ✅ handle "message"
     if (data.detail) errors.push(data.detail)
+
     Object.keys(data).forEach((field) => {
       if (Array.isArray(data[field])) {
         data[field].forEach((msg) => errors.push(`${field}: ${msg}`))
-      } else if (typeof data[field] === "string") {
+      } else if (typeof data[field] === "string" && field !== "message") {
         errors.push(`${field}: ${data[field]}`)
       }
     })
   }
+
   errors.forEach((msg) => showToast(msg, "error"))
   return { success: false, errors }
 }
