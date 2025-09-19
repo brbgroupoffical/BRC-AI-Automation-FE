@@ -1,67 +1,25 @@
 import { useState } from "react"
+import { useAutomationResults } from "../hooks/useAutomationResults"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Button } from "./ui/button"
-import { CheckCircle, Clock, AlertCircle, Download, Eye, RefreshCw, FileText, X } from "lucide-react"
+import { CheckCircle, Clock, AlertCircle, FileText, Eye, RefreshCw, X, Loader2 } from "lucide-react"
 
-const mockResults = [
-  {
-    id: 1,
-    fileName: "Invoice_001.pdf",
-    scenario: "1:1",
-    scenarioName: "One-to-One AP Invoice",
-    status: "completed",
-    message: "Successfully processed all line items",
-    createdAt: "2024-01-15 10:30:00",
-    progress: 100,
-    startTime: "2024-01-15 10:30:00",
-    endTime: "2024-01-15 10:32:15",
-    matchedItems: 5,
-    totalItems: 5,
-    confidence: 98.5,
-  },
-  {
-    id: 2,
-    fileName: "Invoice_002.pdf",
-    scenario: "1:Many",
-    scenarioName: "One-to-Many AP Invoice",
-    status: "processing",
-    message: "Processing line items...",
-    createdAt: "2024-01-15 10:35:00",
-    progress: 65,
-    startTime: "2024-01-15 10:35:00",
-    endTime: null,
-    matchedItems: 3,
-    totalItems: 6,
-    confidence: null,
-  },
-  {
-    id: 3,
-    fileName: "Invoice_003.pdf",
-    scenario: "Many:1",
-    scenarioName: "Many-to-One AP Invoice",
-    status: "failed",
-    message: "Unable to extract text from PDF",
-    createdAt: "2024-01-15 10:28:00",
-    progress: 0,
-    startTime: "2024-01-15 10:28:00",
-    endTime: "2024-01-15 10:29:30",
-    matchedItems: 0,
-    totalItems: 4,
-    confidence: null,
-    error: "Unable to extract text from PDF",
-  },
-]
+import { Toast, useToast } from "../components/ui/toast"
 
 export default function ResultsPage() {
-  const [results, setResults] = useState(mockResults)
+    const { results, loading, error, refetch, next, previous, fetchPage } = useAutomationResults()
+
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [selectedResult, setSelectedResult] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+const { showToast ,ToastContainer } = useToast()
 
   const getStatusIcon = (status) => {
     switch (status) {
+      case "success":
       case "completed":
         return <CheckCircle className="w-4 h-4 text-green-600" />
+      case "pending":
       case "processing":
         return <Clock className="w-4 h-4 text-blue-600" />
       case "failed":
@@ -73,12 +31,14 @@ export default function ResultsPage() {
 
   const getStatusBadge = (status) => {
     const variants = {
+      success: "bg-green-100 text-green-800",
       completed: "bg-green-100 text-green-800",
+      pending: "bg-blue-100 text-blue-800",
       processing: "bg-blue-100 text-blue-800",
       failed: "bg-red-100 text-red-800",
     }
     return (
-      <span className={`px-2 py-1 text-xs font-medium rounded-md ${variants[status]}`}>
+      <span className={`px-2 py-1 text-xs font-medium rounded-md ${variants[status] || "bg-gray-100 text-gray-800"}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     )
@@ -86,16 +46,14 @@ export default function ResultsPage() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true)
-    setTimeout(() => {
-      setIsRefreshing(false)
-    }, 1000)
+    await refetch()
+    setIsRefreshing(false)
   }
 
   const formatDateTime = (dateTime) => {
     if (!dateTime) return "N/A"
     try {
       const date = new Date(dateTime)
-      if (isNaN(date.getTime())) return "Invalid Date"
       return date.toLocaleString("en-US", {
         year: "numeric",
         month: "short",
@@ -103,7 +61,7 @@ export default function ResultsPage() {
         hour: "2-digit",
         minute: "2-digit",
       })
-    } catch (error) {
+    } catch {
       return "Invalid Date"
     }
   }
@@ -118,8 +76,15 @@ export default function ResultsPage() {
     setIsModalOpen(false)
   }
 
+const formatScenario = (scenario) => {
+  if (!scenario) return "N/A"
+  return scenario.replaceAll("_", "-").toUpperCase()
+}
+
+
   return (
     <div className="space-y-6">
+      <ToastContainer />
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Processing Results</h2>
@@ -127,15 +92,17 @@ export default function ResultsPage() {
         </div>
         <Button
           onClick={handleRefresh}
-          disabled={isRefreshing}
+          disabled={isRefreshing || loading}
           variant="outline"
           size="sm"
           className="flex items-center space-x-2 bg-transparent"
         >
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
-          <span>Refresh</span>
+          <span>{loading ? "Loading..." : "Refresh"}</span>
         </Button>
       </div>
+
+      {/* {error && <p className="text-red-600">⚠️ {error}</p>} */}
 
       <Card>
         <CardHeader>
@@ -156,79 +123,103 @@ export default function ResultsPage() {
                 </tr>
               </thead>
               <tbody>
-                {results.map((result, index) => (
-                  <tr key={result.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-4 px-4 text-gray-900">{index + 1}</td>
-                    <td className="py-4 px-4">
-                      <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-md">
-                        {result.scenario}
-                      </span>
+                {/* Loader Row */}
+                {loading && (
+                  <tr>
+                    <td colSpan="7" className="py-10 text-center text-gray-500">
+                      <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-gray-400" />
+                      Loading results...
                     </td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center space-x-2">
-                        <FileText className="w-4 h-4 text-gray-500" />
-                        <span className="font-medium text-gray-900">{result.fileName}</span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center space-x-2">
-                        {getStatusIcon(result.status)}
-                        {getStatusBadge(result.status)}
-                      </div>
-                      {result.status === "processing" && (
-                        <div className="mt-2 w-24">
-                          <div className="bg-gray-200 rounded-full h-1.5">
-                            <div
-                              className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
-                              style={{ width: `${result.progress}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-xs text-gray-500 mt-1">{result.progress}%</span>
+                  </tr>
+                )}
+
+                {/* Results */}
+                {!loading &&
+                  results.map((result, index) => (
+                    <tr key={result.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-4 px-4 text-gray-900">{index + 1}</td>
+                      <td className="py-4 px-4">
+                        <span className="px-2 py-1 text-xs font-medium  text-green-800 rounded-md">
+                          {formatScenario(result.scenario)}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex items-center space-x-2">
+                          <FileText className="w-4 h-4 text-gray-500" />
+                          <span className="font-medium text-sm text-gray-900">{result.fileName}</span>
                         </div>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-gray-700 max-w-xs">
-                      <div className="truncate" title={result.message || "No message"}>
-                        {result.message || "No message available"}
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-gray-600 text-sm">{formatDateTime(result.createdAt)}</td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-green-700 border-green-200 hover:bg-green-50 bg-transparent"
-                          onClick={() => openModal(result)}
-                        >
-                          <Eye className="w-3 h-3 mr-1" />
-                          View
-                        </Button>
-                        {result.status === "completed" && (
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex items-center space-x-2">
+                          {getStatusIcon(result.status)}
+                          {getStatusBadge(result.status)}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-gray-700 max-w-xs">
+                        <div className="truncate" title={result.message || "No message"}>
+                          {result.message?.length > 50
+                            ? result.message.slice(0, 50) + "..."
+                            : result.message || "No message available"}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-gray-600 text-sm">
+                        {formatDateTime(result.createdAt)}
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex items-center space-x-2">
                           <Button
                             size="sm"
                             variant="outline"
                             className="text-green-700 border-green-200 hover:bg-green-50 bg-transparent"
+                            onClick={() => openModal(result)}
                           >
-                            <Download className="w-3 h-3 mr-1" />
-                            Export
+                            <Eye className="w-3 h-3 mr-1" />
+                            View
                           </Button>
-                        )}
-                      </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+
+                {/* Empty State */}
+                {!loading && results.length === 0 && (
+                  <tr>
+                    <td colSpan="7" className="py-12 text-center text-gray-500">
+                      <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      No results yet
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
 
-          {results.length === 0 && (
+          {results.length === 0 && !loading && (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No results yet</h3>
               <p className="text-gray-600">Upload and process files to see results here</p>
             </div>
           )}
+           {/* Pagination Controls */}
+      <div className="flex  items-center justify-end mt-4 space-x-2">
+        <Button
+          onClick={() => previous && fetchPage(previous)}
+          disabled={!previous}
+          variant="outline"
+          size="sm"
+        >
+          Previous
+        </Button>
+        <Button
+          onClick={() => next && fetchPage(next)}
+          disabled={!next}
+          variant="outline"
+          size="sm"
+        >
+          Next
+        </Button>
+      </div>
         </CardContent>
       </Card>
 
@@ -250,7 +241,8 @@ export default function ResultsPage() {
                 <label className="text-sm font-medium text-gray-700">Type</label>
                 <p className="mt-1">
                   <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-md">
-                    {selectedResult.scenario}
+                    
+                    {formatScenario(selectedResult.scenario)}
                   </span>
                 </p>
               </div>
@@ -269,14 +261,6 @@ export default function ResultsPage() {
                 <label className="text-sm font-medium text-gray-700">Created At</label>
                 <p className="mt-1 text-gray-900">{formatDateTime(selectedResult.createdAt)}</p>
               </div>
-              {selectedResult.status === "completed" && (
-                <div className="flex items-center space-x-2 pt-4">
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                    <Download className="w-3 h-3 mr-1" />
-                    Download Results
-                  </Button>
-                </div>
-              )}
             </div>
           </div>
         </div>

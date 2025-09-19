@@ -74,8 +74,20 @@ if (response.ok) {
 
     } catch (error) {
       console.error("Upload API error:", error)
-      showToast(error.message, "error" )
-      return { success: false, error: error.message }
+       let errorMessage = "An unexpected error occurred";
+  if (error.response) {
+    // axios style
+    errorMessage = error.response.data?.message || error.message;
+  } else if (error.message) {
+    // native Error
+    errorMessage = error.message;
+  }
+
+  showToast(errorMessage, "error");
+  return { success: false, error: errorMessage };
+
+      // showToast(error.message, "error" )
+      // return { success: false, error: error.message }
     } finally {
       setIsUploading(false)
     }

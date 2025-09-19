@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
 import FileUpload from "../FileUpload"
-import { Play, Eye, FileText } from "lucide-react"
+import { Play, Eye, FileText, ArrowRightLeft } from "lucide-react"
 import { useToast } from "../ui/toast"
 import { MatchingModal } from "../fileMatchingModal"
 import { useUploadPdf } from "../../hooks/useUploadPdf"
@@ -74,12 +74,16 @@ export default function OneToOneScenario() {
           onShowResults={handleShowResults}
         />
 
+        
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">1:1 AP Invoice Processing</h2>
-            <p className="text-gray-600 mt-2">Upload and process invoice documents for one-to-one matching</p>
-          </div>
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
+            <ArrowRightLeft className="w-8 h-8 text-green-600" />
+            <span>1:1 AP Invoice Processing</span>
+          </h2>
+          <p className="text-gray-600 mt-2">Upload and process invoice documents for one-to-one matching</p>
         </div>
+      </div>
 
         <div className="max-w-2xl mx-auto">
           <Card>
