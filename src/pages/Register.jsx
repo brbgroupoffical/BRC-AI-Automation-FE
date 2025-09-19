@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState ,useEffect  } from "react"
 import { Navigate, Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
 import { Button } from "../components/ui/button"
@@ -21,43 +21,102 @@ export default function Register() {
     return <Navigate to="/scenarios" replace />
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+useEffect(() => {
+  if (error) {
+    const timer = setTimeout(() => {
+      setError("") // hide after 2 seconds
+    }, 2000)
 
-    if (password1 !== password2) {
-      setError("Passwords do not match")
-      setIsLoading(false)
-      return
-    }
+    return () => clearTimeout(timer) // cleanup
+  }
+}, [error])
 
-    if (password1.length < 8) {
-      setError("Password must be at least 8 characters long")
-      setIsLoading(false)
-      return
-    }
 
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault()
+//     setIsLoading(true)
+//     setError("")
+
+//     if (password1 !== password2) {
+//       setError("Passwords do not match")
+//       setIsLoading(false)
+//       return
+//     }
+
+//     if (password1.length < 8) {
+//       setError("Password must be at least 8 characters long")
+//       setIsLoading(false)
+//       return
+//     }
+
+//     const result = await register(username, email, password1, password2)
+
+// if (result.success) {
+//   showToast("Account created successfully!", "success")
+//   navigate("/") // redirect to login
+// } else {
+//   if (result.errors && result.errors.length > 0) {
+//     result.errors.forEach((err) => {
+//       showToast(err, "error")
+//       console.error("Register error:", err)
+//     })
+//     setError(result.errors.join(", "))
+//   } else {
+//     showToast("Registration failed", "error")
+//     console.error("Unknown register error:", result)
+//     setError("Registration failed")
+//   }
+// }
+
+//   }
+
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  setIsLoading(true)
+  setError("")
+
+  if (password1 !== password2) {
+    setError("Passwords do not match")
+    setIsLoading(false)
+    return
+  }
+
+  if (password1.length < 8) {
+    setError("Password must be at least 8 characters long")
+    setIsLoading(false)
+    return
+  }
+
+  try {
     const result = await register(username, email, password1, password2)
 
-if (result.success) {
-  showToast("Account created successfully!", "success")
-  navigate("/") // redirect to login
-} else {
-  if (result.errors && result.errors.length > 0) {
-    result.errors.forEach((err) => {
-      showToast(err, "error")
-      console.error("Register error:", err)
-    })
-    setError(result.errors.join(", "))
-  } else {
-    showToast("Registration failed", "error")
-    console.error("Unknown register error:", result)
-    setError("Registration failed")
+    if (result.success) {
+      showToast("Account created successfully!", "success")
+      navigate("/") // redirect to login
+    } else {
+      if (result.errors && result.errors.length > 0) {
+        result.errors.forEach((err) => {
+          showToast(err, "error")
+          console.error("Register error:", err)
+        })
+        setError(result.errors.join(", "))
+      } else {
+        showToast("Registration failed", "error")
+        console.error("Unknown register error:", result)
+        setError("Registration failed")
+      }
+    }
+  } catch (err) {
+    console.error("Unexpected error:", err)
+    showToast("Something went wrong. Please try again.", "error")
+    setError("Unexpected error occurred")
+  } finally {
+    // ✅ loader hamesha stop hoga chahe success ho ya fail
+    setIsLoading(false)
   }
 }
 
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 p-4">
@@ -128,7 +187,12 @@ if (result.success) {
                 className="focus:ring-green-500 focus:border-green-500"
               />
             </div>
-            {error && <div className="text-sm text-red-600 bg-red-50 p-2 rounded">{error}</div>}
+            {error && (
+  <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+    {error}
+  </div>
+)}
+
             <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white" disabled={isLoading}>
               {isLoading ? "Creating Account..." : "Create Account"}
             </Button>

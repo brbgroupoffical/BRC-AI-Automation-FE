@@ -31,7 +31,17 @@ export function useAutomationResults() {
         return
       }
 
-      if (!res.ok) throw new Error(`Error ${res.status}`)
+      // if (!res.ok) throw new Error(`Error ${res.status}`)
+        if (!res.ok) {
+      let errorMessage = `Error ${res.status}`
+      try {
+        const errData = await res.json()
+        errorMessage = errData.message || errorMessage
+      } catch {
+        // fallback if response is not JSON
+      }
+      throw new Error(errorMessage)
+    }
       const data = await res.json()
 
       // map results
@@ -52,10 +62,16 @@ export function useAutomationResults() {
       setError(null)
 
       if (showToastOnSuccess) showToast("Results refreshed successfully", "success")
-    } catch (err) {
-      setError(err.message)
-      showToast(`Failed to fetch results: ${err.message}`, "error")
-    } finally {
+    // } 
+    }
+  catch (err) {
+    console.error("Fetch error:", err)
+    const msg =
+      err?.message ||
+      "Unable to connect. Please check your network or try again later."
+    setError(msg)
+    showToast(`Failed to fetch results: ${msg}`, "error")
+  }    finally {
       setLoading(false)
     }
   }
