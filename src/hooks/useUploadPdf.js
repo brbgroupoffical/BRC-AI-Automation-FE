@@ -87,7 +87,7 @@ if (response.ok) {
     errorMessage = error.message;
   }
 
-  showToast(errorMessage, "error");
+  showToast(errorMessage, "error" , 6000);
   return { success: false, error: errorMessage };
 
       // showToast(error.message, "error" )

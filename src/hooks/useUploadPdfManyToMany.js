@@ -73,7 +73,7 @@ export function useUploadPdfManyToMany() {
 
     } catch (error) {
       console.error("Upload API error:", error)
-      showToast(error.message || "Unexpected error occurred", "error")
+      showToast(error.message || "Unexpected error occurred", "error",6000)
       return { success: false, error: error.message }
     } finally {
       setIsUploading(false)
