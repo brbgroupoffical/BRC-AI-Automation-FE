@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { X, CheckCircle, AlertCircle, Info } from "lucide-react"
 
-export function Toast({ message, type = "info", duration = 3000, onClose }) {
+export function Toast({ message, type = "info", duration = 5000, onClose }) {
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export function Toast({ message, type = "info", duration = 3000, onClose }) {
 export function useToast() {
   const [toasts, setToasts] = useState([])
 
-  const showToast = (message, type = "info", duration = 3000) => {
+  const showToast = (message, type = "info", duration = 5000) => {
     const id = Date.now()
     const newToast = { id, message, type, duration }
     setToasts((prev) => [...prev, newToast])

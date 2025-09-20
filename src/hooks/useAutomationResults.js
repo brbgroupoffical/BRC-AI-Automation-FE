@@ -38,9 +38,11 @@ export function useAutomationResults() {
       const formatted = data.results.map(item => ({
         id: item.id,
         fileName: item.filename,
+        automationStatus: item.status,
         scenario: item.case_type,
         scenarioName: item.case_type?.replaceAll("_", " ") || "N/A",
-        status: item.steps?.[0]?.status || item.status,
+        // status: item.steps?.[0]?.status || item.status,
+        // stepStatus: item.steps?.[0]?.status || "N/A",
         message: item.steps?.[0]?.message || "No message available",
         createdAt: item.created_at,
       }))
