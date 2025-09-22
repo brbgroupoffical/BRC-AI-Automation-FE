@@ -43,28 +43,38 @@ export function useUploadPdfOneToMany() {
           }
         }
 
-        if (data?.detail) {
-          showToast(data.detail, "error")
-          return { success: false, error: data.detail }
-        }
-      }
+      //   if (data?.detail) {
+      //     showToast(data.detail, "error")
+      //     return { success: false, error: data.detail }
+      //   }
+      // }
 
       // ❌ Handle other errors
-      if (!response.ok) {
-        const errors = []
-        if (data.detail) errors.push(data.detail)
+      // if (!response.ok) {
+      //   const errors = []
+      //   if (data.detail) errors.push(data.detail)
 
-        Object.entries(data).forEach(([field, value]) => {
-          if (Array.isArray(value)) {
-            value.forEach((msg) => errors.push(`${field}: ${msg}`))
-          } else if (typeof value === "string" && field !== "detail") {
-            errors.push(`${field}: ${value}`)
-          }
-        })
+      //   Object.entries(data).forEach(([field, value]) => {
+      //     if (Array.isArray(value)) {
+      //       value.forEach((msg) => errors.push(`${field}: ${msg}`))
+      //     } else if (typeof value === "string" && field !== "detail") {
+      //       errors.push(`${field}: ${value}`)
+      //     }
+      //   })
 
-        errors.forEach((msg) => showToast(msg, "error"))
-        return { success: false, errors }
+      //   errors.forEach((msg) => showToast(msg, "error"))
+      //   return { success: false, errors }
+      // }
       }
+ // ❌ Handle other errors
+      if (!response.ok || data.success === false) {
+        const errorMsg =
+          data?.message || data?.detail || "Something went wrong while uploading"
+        showToast(errorMsg, "error", 5000)
+        return { success: false, error: errorMsg }
+      }
+
+
 
       // ✅ Success
       const successMsg = data?.message || "PDF uploaded successfully!"
@@ -73,7 +83,7 @@ export function useUploadPdfOneToMany() {
 
     } catch (error) {
       console.error("Upload API error:", error)
-      showToast(error.message || "Unexpected error occurred", "error")
+      showToast(error.message || "Unexpected error occurred", "error",6000)
       return { success: false, error: error.message }
     } finally {
       setIsUploading(false)

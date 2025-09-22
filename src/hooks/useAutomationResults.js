@@ -50,9 +50,11 @@ export function useAutomationResults() {
       const formatted = data.results.map(item => ({
         id: item.id,
         fileName: item.filename,
+        automationStatus: item.status,
         scenario: item.case_type,
         scenarioName: item.case_type?.replaceAll("_", " ") || "N/A",
-        status: item.steps?.[0]?.status || item.status,
+        // status: item.steps?.[0]?.status || item.status,
+        // stepStatus: item.steps?.[0]?.status || "N/A",
         message: item.steps?.[0]?.message || "No message available",
         createdAt: item.created_at,
       }))
@@ -64,22 +66,20 @@ export function useAutomationResults() {
       setError(null)
 
       if (showToastOnSuccess) showToast("Results refreshed successfully", "success")
-    }
-  catch (err) {
-    console.error("Fetch error:", err)
-    const msg =
-      err?.message ||
-      "Unable to connect. Please check your network or try again later."
-    setError(msg)
-    showToast(`Failed to fetch results: ${msg}`, "error")
-  }    finally {
+    } catch (err) {
+      setError(err.message)
+      showToast(`Failed to fetch results: ${err.message}`, "error")
+    } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
     fetchResults()
-    const interval = setInterval(() => fetchResults(), 20 * 60 * 1000)
+    const interval = setInterval(() => fetchResults(), 2 * 60 * 1000)
+      // const interval = setInterval(() => fetchResults(), 10 * 1000)
+
+
     return () => clearInterval(interval)
   }, [])
   return {

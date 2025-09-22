@@ -116,7 +116,8 @@ const formatScenario = (scenario) => {
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">S.No</th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">Type</th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">File Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700"> Status</th>
+                  {/* <th className="text-left py-3 px-4 font-semibold text-gray-700">Step Status</th> */}
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">Message</th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">Created At</th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">Actions</th>
@@ -149,12 +150,27 @@ const formatScenario = (scenario) => {
                           <span className="font-medium text-sm text-gray-900">{result.fileName}</span>
                         </div>
                       </td>
-                      <td className="py-4 px-4">
+                      {/* <td className="py-4 px-4">
                         <div className="flex items-center space-x-2">
                           {getStatusIcon(result.status)}
                           {getStatusBadge(result.status)}
                         </div>
-                      </td>
+                      </td> */}
+                       {/* ✅ Automation Status */}
+        <td className="py-4 px-4">
+          <div className="flex items-center space-x-2">
+            {getStatusIcon(result.automationStatus)}
+            {getStatusBadge(result.automationStatus)}
+          </div>
+        </td>
+
+        {/* ✅ Step Status */}
+        {/* <td className="py-4 px-4">
+          <div className="flex items-center space-x-2">
+            {getStatusIcon(result.stepStatus)}
+            {getStatusBadge(result.stepStatus)}
+          </div>
+        </td> */}
                       <td className="py-4 px-4 text-gray-700 max-w-xs">
                         <div className="truncate" title={result.message || "No message"}>
                           {result.message?.length > 50
@@ -232,7 +248,8 @@ const formatScenario = (scenario) => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+      <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
+
               <div>
                 <label className="text-sm font-medium text-gray-700">File Name</label>
                 <p className="mt-1 text-gray-900">{selectedResult.fileName}</p>
@@ -246,13 +263,30 @@ const formatScenario = (scenario) => {
                   </span>
                 </p>
               </div>
-              <div>
+              {/* <div>
                 <label className="text-sm font-medium text-gray-700">Status</label>
                 <div className="mt-1 flex items-center space-x-2">
                   {getStatusIcon(selectedResult.status)}
                   {getStatusBadge(selectedResult.status)}
                 </div>
-              </div>
+              </div> */}
+
+<div>
+  <label className="text-sm font-medium text-gray-700">Automation Status</label>
+  <div className="mt-1 flex items-center space-x-2">
+    {getStatusIcon(selectedResult.automationStatus)}
+    {getStatusBadge(selectedResult.automationStatus)}
+  </div>
+</div>
+{/* <div>
+  <label className="text-sm font-medium text-gray-700">Step Status</label>
+  <div className="mt-1 flex items-center space-x-2">
+    {getStatusIcon(selectedResult.stepStatus)}
+    {getStatusBadge(selectedResult.stepStatus)}
+  </div>
+</div> */}
+
+
               <div>
                 <label className="text-sm font-medium text-gray-700">Message</label>
                 <p className="mt-1 text-gray-900">{selectedResult.message || "No message available"}</p>
