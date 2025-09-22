@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react"
 import { ENDPOINTS } from "../utils/endpoint"
 import { useToast } from "../components/ui/toast"
-
+import { useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
+import { removeUser } from "../feature/userSlice"
 export function useAutomationResults() {
+  const dispatch = useDispatch()
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -10,28 +13,28 @@ export function useAutomationResults() {
   const [next, setNext] = useState(null)
   const [previous, setPrevious] = useState(null)
   const { showToast } = useToast()
+     const {
+        access
+    } = useSelector((state) => state.user)
 
   const fetchResults = async (url = ENDPOINTS.AUTOMATION_RESULT, showToastOnSuccess = false) => {
     try {
       setLoading(true)
-      const accessToken = localStorage.getItem("accessToken")
-
       const res = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: accessToken ? `Bearer ${accessToken}` : "",
+          Authorization: access ? `Bearer ${access}` : "",
         },
       })
 
       if (res.status === 401) {
-        localStorage.removeItem("accessToken")
+         dispatch(removeUser())
         showToast("Session expired, please log in again", "error")
         window.location.href = "/"
         return
       }
 
-      // if (!res.ok) throw new Error(`Error ${res.status}`)
         if (!res.ok) {
       let errorMessage = `Error ${res.status}`
       try {
@@ -44,7 +47,6 @@ export function useAutomationResults() {
     }
       const data = await res.json()
 
-      // map results
       const formatted = data.results.map(item => ({
         id: item.id,
         fileName: item.filename,
@@ -62,7 +64,6 @@ export function useAutomationResults() {
       setError(null)
 
       if (showToastOnSuccess) showToast("Results refreshed successfully", "success")
-    // } 
     }
   catch (err) {
     console.error("Fetch error:", err)
@@ -79,11 +80,8 @@ export function useAutomationResults() {
   useEffect(() => {
     fetchResults()
     const interval = setInterval(() => fetchResults(), 20 * 60 * 1000)
-    //   const interval = setInterval(() => fetchResults(), 10 * 1000)
-
     return () => clearInterval(interval)
   }, [])
-
   return {
     results,
     loading,

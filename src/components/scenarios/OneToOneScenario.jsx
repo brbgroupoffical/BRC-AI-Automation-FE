@@ -4,10 +4,10 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
-import FileUpload from "../FileUpload"
+import FileUpload from "../others/FileUpload"
 import { Play, Eye, FileText, ArrowRightLeft } from "lucide-react"
 import { useToast } from "../ui/toast"
-import { MatchingModal } from "../fileMatchingModal"
+import { MatchingModal } from "../others/fileMatchingModal"
 import { useUploadPdf } from "../../hooks/useUploadPdf"
 
 export default function OneToOneScenario() {

@@ -1,10 +1,10 @@
 import { useState } from "react"
-import { useAutomationResults } from "../hooks/useAutomationResults"
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { Button } from "./ui/button"
+import { useAutomationResults } from "../../hooks/useAutomationResults"
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
+import { Button } from "../ui/button"
 import { CheckCircle, Clock, AlertCircle, FileText, Eye, RefreshCw, X, Loader2 } from "lucide-react"
 
-import { Toast, useToast } from "../components/ui/toast"
+import { Toast, useToast } from "../ui/toast"
 
 export default function ResultsPage() {
     const { results, loading, error, refetch, next, previous, fetchPage } = useAutomationResults()

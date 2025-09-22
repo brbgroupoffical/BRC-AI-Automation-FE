@@ -1,18 +1,18 @@
 import { Outlet, Navigate } from "react-router-dom"
-import Header from "../components/Header"
-import Sidebar from "../components/Sidebar"
-import { useAuth } from "../contexts/AuthContext"
+import Header from "../components/others/Header"
+import Sidebar from "../components/others/Sidebar"
+import { useSelector } from "react-redux"
 
 export default function ProtectedRoute() {
-  const { isAuthenticated, loading } = useAuth()
+  const { isAuthenticated } = useSelector((state) => state.user)
 
-  if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>  
-  }
+
+  console.log("isAuthenticated:", isAuthenticated)
 
   if (!isAuthenticated) {
     return <Navigate to="/" replace />
   }
+
 
   return (
     <div className="flex h-screen bg-gray-50">

@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom"
-import ResultsPage from "../components/ResultsPage"
+import ResultsPage from "../components/others/ResultsPage"
 import ManyToOneScenario from "../components/scenarios/ManyToOneScenario"
 import OneToManyScenario from "../components/scenarios/OneToManyScenario"
 import OneToOneScenario from "../components/scenarios/OneToOneScenario"

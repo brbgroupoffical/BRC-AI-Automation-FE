@@ -2,9 +2,8 @@
 
 import { useState, useRef } from "react"
 import { Upload, File, X } from "lucide-react"
-import { cn } from "../lib/utils"
-import { useToast } from "./ui/toast"
-
+import { cn } from "../../lib/utils"
+import { useToast } from "../ui/toast"
 
 export default function FileUpload({ onFileUpload, acceptedTypes = ".pdf", maxSize = 10, label = "Upload File" }) {
   const [isDragOver, setIsDragOver] = useState(false)

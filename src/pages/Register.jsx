@@ -1,198 +1,134 @@
-import { useState ,useEffect  } from "react"
-import { Navigate, Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../contexts/AuthContext"
+import { useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import InputField from "../components/custom/Input"
 import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
+import { CardContent } from "../components/ui/card"
 import { useToast } from "../components/ui/toast"
-
+import { useAuth } from "./../hooks/useAuth"
+import { useSelector } from "react-redux"
 export default function Register() {
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password1, setPassword1] = useState("")
-  const [password2, setPassword2] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const { isAuthenticated } = useSelector((state) => state.user)
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  })
+
   const [error, setError] = useState("")
-  const { register, isAuthenticated } = useAuth()
+  const { register, fieldErrors, isLoading } = useAuth()
   const { showToast, ToastContainer } = useToast()
   const navigate = useNavigate()
 
-  if (isAuthenticated) {
-    return <Navigate to="/scenarios" replace />
-  }
+  // if (isAuthenticated) {
+  //   return <Navigate to="/scenarios/one-to-one" replace />
+  // }
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError("")
 
-useEffect(() => {
-  if (error) {
-    const timer = setTimeout(() => {
-      setError("") // hide after 2 seconds
-    }, 2000)
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match")
+      return
+    }
 
-    return () => clearTimeout(timer) // cleanup
-  }
-}, [error])
-
-
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault()
-//     setIsLoading(true)
-//     setError("")
-
-//     if (password1 !== password2) {
-//       setError("Passwords do not match")
-//       setIsLoading(false)
-//       return
-//     }
-
-//     if (password1.length < 8) {
-//       setError("Password must be at least 8 characters long")
-//       setIsLoading(false)
-//       return
-//     }
-
-//     const result = await register(username, email, password1, password2)
-
-// if (result.success) {
-//   showToast("Account created successfully!", "success")
-//   navigate("/") // redirect to login
-// } else {
-//   if (result.errors && result.errors.length > 0) {
-//     result.errors.forEach((err) => {
-//       showToast(err, "error")
-//       console.error("Register error:", err)
-//     })
-//     setError(result.errors.join(", "))
-//   } else {
-//     showToast("Registration failed", "error")
-//     console.error("Unknown register error:", result)
-//     setError("Registration failed")
-//   }
-// }
-
-//   }
-
-const handleSubmit = async (e) => {
-  e.preventDefault()
-  setIsLoading(true)
-  setError("")
-
-  if (password1 !== password2) {
-    setError("Passwords do not match")
-    setIsLoading(false)
-    return
-  }
-
-  if (password1.length < 8) {
-    setError("Password must be at least 8 characters long")
-    setIsLoading(false)
-    return
-  }
-
-  try {
-    const result = await register(username, email, password1, password2)
-
+    if (form.password.length < 8) {
+      setError("Password must be at least 8 characters long")
+      return
+    }
+    const result = await register(form)
     if (result.success) {
       showToast("Account created successfully!", "success")
-      navigate("/") // redirect to login
-    } else {
+      navigate("/")
+    }
+    else {
       if (result.errors && result.errors.length > 0) {
         result.errors.forEach((err) => {
-          showToast(err, "error")
           console.error("Register error:", err)
-        })
+        }
+        )
         setError(result.errors.join(", "))
-      } else {
-        showToast("Registration failed", "error")
-        console.error("Unknown register error:", result)
-        setError("Registration failed")
       }
     }
-  } catch (err) {
-    console.error("Unexpected error:", err)
-    showToast("Something went wrong. Please try again.", "error")
-    setError("Unexpected error occurred")
-  } finally {
-    // ✅ loader hamesha stop hoga chahe success ho ya fail
-    setIsLoading(false)
   }
-}
 
+ 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/scenarios/one-to-one")
+    }
+  }, [isAuthenticated, navigate])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 p-4">
       <ToastContainer />
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center pb-2">
+      <div className="w-full max-w-md bg-white py-5 rounded-lg shadow-lg">
+        <div className="text-center pb-2">
           <div className="flex justify-center mb-4">
             <img src="/assets/brc-logo.png" alt="BRC Logo" className="h-16 w-auto" />
           </div>
-          <CardTitle className="text-2xl font-bold text-green-700">Create Account</CardTitle>
+          <div className="text-2xl font-bold text-green-700">Create Account</div>
           <p className="text-sm text-muted-foreground">Register for BRC AP Invoice System</p>
-        </CardHeader>
+        </div>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="username" className="text-sm font-medium">
-                Username
-              </label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                className="focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="password1" className="text-sm font-medium">
-                Password
-              </label>
-              <Input
-                id="password1"
-                type="password"
-                placeholder="Enter your password"
-                value={password1}
-                onChange={(e) => setPassword1(e.target.value)}
-                required
-                className="focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="password2" className="text-sm font-medium">
-                Confirm Password
-              </label>
-              <Input
-                id="password2"
-                type="password"
-                placeholder="Confirm your password"
-                value={password2}
-                onChange={(e) => setPassword2(e.target.value)}
-                required
-                className="focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-            {error && (
-  <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-    {error}
-  </div>
-)}
+            <InputField
+              error={fieldErrors.username}
+              id={'username'}
+              placeholder={'Enter Your username'}
+              value={form.username} onChange={
+                (e) => setForm(
+                  { ...form, username: e.target.value }
+                )
+              }
+              label={'Username'}
+              type={'text'}
+            />
 
+            <InputField
+              id={'email'}
+              placeholder={'Enter Your email'}
+              value={form.email}
+              onChange={(e) => setForm(
+                { ...form, email: e.target.value }
+              )}
+              label={'Email'}
+              type={'email'}
+              error={fieldErrors.email}
+            />
+
+            <InputField
+              id={'password'}
+              placeholder={'Enter Your password'}
+              value={form.password}
+              onChange={
+                (e) => setForm(
+                  { ...form, password: e.target.value }
+                )
+              }
+              label={'Password'}
+              type={'password'}
+              error={error || fieldErrors.password1}
+            />
+            <InputField
+              id={'confirmPassword'}
+              placeholder={'Confirm Your password'}
+              value={form.confirmPassword}
+              onChange={
+                (e) => setForm(
+                  { ...form, confirmPassword: e.target.value }
+                )
+              }
+              label={'Confirm Password'}
+              type={'password'}
+              error={fieldErrors.password2}
+            />
+            {fieldErrors.non_field_errors && (
+              <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                {fieldErrors.non_field_errors}
+              </div>
+            )}
             <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white" disabled={isLoading}>
               {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
@@ -204,7 +140,7 @@ const handleSubmit = async (e) => {
             </div>
           </form>
         </CardContent>
-      </Card>
+      </div>
     </div>
   )
 }

@@ -1,10 +1,10 @@
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
-import { ArrowRightLeft, ArrowUpRight, ArrowDownLeft, BarChart3, Settings, LogOut, User } from "lucide-react"
-import { cn } from "../lib/utils"
-import { useToast } from "./ui/toast"
-import { useAuth } from "../contexts/AuthContext"
-import { Button } from "./ui/button"
+import { ArrowDownLeft, ArrowRightLeft, ArrowUpRight, BarChart3, LogOut } from "lucide-react"
+import { cn } from "../../lib/utils"
+import { useToast } from "../ui/toast"
+import { useAuth } from "../../hooks/useAuth"
+// import { useAuth } from "../../contexts/AuthContext"
 
 
 const scenarios = [
@@ -53,21 +53,24 @@ const otherItems = [
 ]
 
 export default function Sidebar() {
+  const {
+    logout
+  } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
   const { showToast, ToastContainer } = useToast()
-  
-const { user, logout } = useAuth()
 
- const handleLogout = async () => {
-  const result = await logout()
-  if (result.success) {
-    showToast({ title: "Logged out successfully!" })
-    navigate("/login")   
-  } else {
-    showToast({ title: "Logout failed", variant: "destructive" })
+  // const { user, logout } = useAuth()
+
+  const handleLogout = async () => {
+    const result = await logout()
+    if (result.success) {
+      showToast({ title: "Logged out successfully!" })
+      navigate("/")
+    } else {
+      showToast({ title: "Logout failed", variant: "destructive" })
+    }
   }
-}
 
 
 
@@ -105,7 +108,7 @@ const { user, logout } = useAuth()
 
   return (
 
-    
+
     <div className="w-20 bg-white border-r border-gray-200 flex flex-col">
       <ToastContainer />
       {/* Logo */}
@@ -121,17 +124,17 @@ const { user, logout } = useAuth()
             <NavItem key={item.id} item={item} isActive={location.pathname === item.path} />
           ))}
         </div>
-<div className="space-y-2">
+        <div className="space-y-2">
           {otherItems.map((item) => (
             <NavItem key={item.id} item={item} isActive={location.pathname === item.path} />
           ))}
         </div>
-              </nav>
+      </nav>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-4"></div>
+      {/* Divider */}
+      <div className="border-t border-gray-200 my-4"></div>
 
-          <div className="flex flex-col items-center space-y-2 p-2">
+      <div className="flex flex-col items-center space-y-2 p-2">
         {/* User (email tooltip) */}
         {/* <div className="relative group">
           <div className="flex items-center justify-center w-12 h-12 rounded-lg text-gray-600 hover:bg-green-50 hover:text-green-600">

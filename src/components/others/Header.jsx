@@ -1,10 +1,9 @@
 
-import { useAuth } from "../contexts/AuthContext"
 // import { Button } from "./ui/button"
 // import { LogOut, User } from "lucide-react"
 
 export default function Header() {
-  const { user, logout } = useAuth()
+  // const { user, logout } = useAuth()
 
   return (
     <header className="bg-white px-6 py-4 shadow-md ">
