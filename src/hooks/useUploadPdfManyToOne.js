@@ -1,11 +1,14 @@
-import { useState } from "react"
-import { ENDPOINTS } from "../utils/endpoint"
+import { useDispatch, useSelector } from "react-redux"
 import { useToast } from "../components/ui/toast"
+import { setLoading } from "../feature/loaderSlice"
+import { ENDPOINTS } from "../utils/endpoint"
 
 export function useUploadPdfOneToMany() {
-  const [isUploading, setIsUploading] = useState(false)
+  const dispatch = useDispatch()
   const { showToast } = useToast()
-
+  const {
+    access
+  } = useSelector((state) => state.user)
   const uploadPdf = async (file) => {
     if (!file) {
       showToast("No file selected", "error")
@@ -13,17 +16,14 @@ export function useUploadPdfOneToMany() {
     }
 
     try {
-      setIsUploading(true)
-
+      dispatch(setLoading({ key: "oneToManyLoader", value: true }))
       const formData = new FormData()
       formData.append("file", file)
-
-      const accessToken = localStorage.getItem("accessToken")
 
       const response = await fetch(ENDPOINTS.GRN_UPLOAD_ONETOMANY, {
         method: "POST",
         headers: {
-          Authorization: accessToken ? `Bearer ${accessToken}` : "",
+          Authorization: access ? `Bearer ${access}` : "",
         },
         body: formData,
       })
@@ -43,30 +43,30 @@ export function useUploadPdfOneToMany() {
           }
         }
 
-      //   if (data?.detail) {
-      //     showToast(data.detail, "error")
-      //     return { success: false, error: data.detail }
-      //   }
-      // }
+        //   if (data?.detail) {
+        //     showToast(data.detail, "error")
+        //     return { success: false, error: data.detail }
+        //   }
+        // }
 
-      // ❌ Handle other errors
-      // if (!response.ok) {
-      //   const errors = []
-      //   if (data.detail) errors.push(data.detail)
+        // ❌ Handle other errors
+        // if (!response.ok) {
+        //   const errors = []
+        //   if (data.detail) errors.push(data.detail)
 
-      //   Object.entries(data).forEach(([field, value]) => {
-      //     if (Array.isArray(value)) {
-      //       value.forEach((msg) => errors.push(`${field}: ${msg}`))
-      //     } else if (typeof value === "string" && field !== "detail") {
-      //       errors.push(`${field}: ${value}`)
-      //     }
-      //   })
+        //   Object.entries(data).forEach(([field, value]) => {
+        //     if (Array.isArray(value)) {
+        //       value.forEach((msg) => errors.push(`${field}: ${msg}`))
+        //     } else if (typeof value === "string" && field !== "detail") {
+        //       errors.push(`${field}: ${value}`)
+        //     }
+        //   })
 
-      //   errors.forEach((msg) => showToast(msg, "error"))
-      //   return { success: false, errors }
-      // }
+        //   errors.forEach((msg) => showToast(msg, "error"))
+        //   return { success: false, errors }
+        // }
       }
- // ❌ Handle other errors
+      // ❌ Handle other errors
       if (!response.ok || data.success === false) {
         const errorMsg =
           data?.message || data?.detail || "Something went wrong while uploading"
@@ -83,12 +83,11 @@ export function useUploadPdfOneToMany() {
 
     } catch (error) {
       console.error("Upload API error:", error)
-      showToast(error.message || "Unexpected error occurred", "error",6000)
+      showToast(error.message || "Unexpected error occurred", "error", 6000)
       return { success: false, error: error.message }
     } finally {
-      setIsUploading(false)
+      dispatch(setLoading({ key: "oneToManyLoader", value: false }))
     }
   }
-
-  return { uploadPdf, isUploading }
+  return { uploadPdf }
 }

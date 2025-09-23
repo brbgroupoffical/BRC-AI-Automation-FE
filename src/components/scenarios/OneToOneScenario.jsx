@@ -9,14 +9,15 @@ import { Play, Eye, FileText, ArrowRightLeft } from "lucide-react"
 import { useToast } from "../ui/toast"
 import { MatchingModal } from "../others/fileMatchingModal"
 import { useUploadPdf } from "../../hooks/useUploadPdf"
-
+import { useSelector } from "react-redux"
 export default function OneToOneScenario() {
+  const { oneToOneLoader } = useSelector((state) => state.loader)
   const [uploadedFile, setUploadedFile] = useState(null)
   const [processingTasks, setProcessingTasks] = useState([])
   const [taskCounter, setTaskCounter] = useState(0)
   const navigate = useNavigate()
   const { showToast, ToastContainer } = useToast()
-  const { uploadPdf, isUploading } = useUploadPdf()
+  const { uploadPdf } = useUploadPdf()
 
   const [showModal, setShowModal] = useState(false)
 
@@ -74,16 +75,16 @@ export default function OneToOneScenario() {
           onShowResults={handleShowResults}
         />
 
-        
+
         <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
-            <ArrowRightLeft className="w-8 h-8 text-green-600" />
-            <span>1:1 AP Invoice Processing</span>
-          </h2>
-          <p className="text-gray-600 mt-2">Upload and process invoice documents for one-to-one matching</p>
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
+              <ArrowRightLeft className="w-8 h-8 text-green-600" />
+              <span>1:1 AP Invoice Processing</span>
+            </h2>
+            <p className="text-gray-600 mt-2">Upload and process invoice documents for one-to-one matching</p>
+          </div>
         </div>
-      </div>
 
         <div className="max-w-2xl mx-auto">
           <Card>
@@ -104,11 +105,11 @@ export default function OneToOneScenario() {
               <div className="flex flex-col space-y-3">
                 <Button
                   onClick={handleStartMatching}
-                  disabled={!uploadedFile || isUploading}
+                  disabled={!uploadedFile || oneToOneLoader}
                   className="w-full bg-green-600 hover:bg-green-700 text-white flex items-center justify-center"
                   size="lg"
                 >
-                  {isUploading ? (
+                  {oneToOneLoader ? (
                     <div className="flex items-center space-x-2">
                       <svg
                         className="animate-spin h-5 w-5 text-white"

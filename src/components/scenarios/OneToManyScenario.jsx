@@ -1,21 +1,23 @@
 "use client"
 
+import { ArrowUpRight, Eye, FileText, Play } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { Button } from "../ui/button"
-import FileUpload from "../others/FileUpload"
-import { Play, Eye, FileText, ArrowUpRight } from "lucide-react"
-import { useToast } from "../ui/toast"
+import { useUploadPdfOneToMany } from "../../hooks/useUploadPdfManyToOne"
 import { MatchingModal } from "../others/fileMatchingModal"
-import { useUploadPdfOneToMany } from "../../hooks/useUploadPdfOneToMany"
+import FileUpload from "../others/FileUpload"
+import { Button } from "../ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
+import { useToast } from "../ui/toast"
+import { useSelector } from "react-redux"
 
 export default function OneToManyScenario() {
+   const { oneToManyLoader } = useSelector((state) => state.loader)
   const [uploadedFile, setUploadedFile] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
   const { showToast, ToastContainer } = useToast()
-  const { uploadPdf, isUploading } = useUploadPdfOneToMany()
+  const { uploadPdf } = useUploadPdfOneToMany()
 
   const handleFileUpload = (file) => {
     if (!file) {
@@ -39,7 +41,6 @@ export default function OneToManyScenario() {
     }
 
     const result = await uploadPdf(uploadedFile)
-
     if (result.success) {
       showToast(result.data?.message || "PDF uploaded successfully!", "success")
 
@@ -94,11 +95,11 @@ export default function OneToManyScenario() {
             <div className="flex flex-col space-y-3">
               <Button
                 onClick={handleStartMatching}
-                disabled={!uploadedFile || isUploading}
+                disabled={!uploadedFile || oneToManyLoader}
                 className="w-full bg-green-600 hover:bg-green-700 text-white flex items-center justify-center"
                 size="lg"
               >
-                {isUploading ? (
+                {oneToManyLoader ? (
                   <div className="flex items-center space-x-2">
                     <svg
                       className="animate-spin h-5 w-5 text-white"

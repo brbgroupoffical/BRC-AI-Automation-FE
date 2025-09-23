@@ -1,10 +1,15 @@
 import { useState } from "react"
 import { ENDPOINTS } from "../utils/endpoint"
 import { useToast } from "../components/ui/toast"
-
+import { useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
+import { setLoading } from "../feature/loaderSlice"
 export function useUploadPdfManyToMany() {
-  const [isUploading, setIsUploading] = useState(false)
+  const dispatch = useDispatch()
   const { showToast } = useToast()
+    const {
+    access
+  } = useSelector((state) => state.user)
 
   const uploadPdf = async (file) => {
     if (!file) {
@@ -13,17 +18,15 @@ export function useUploadPdfManyToMany() {
     }
 
     try {
-      setIsUploading(true)
+      dispatch(setLoading({ key: "manyToManyLoader", value: true }))
 
       const formData = new FormData()
       formData.append("file", file)
 
-      const accessToken = localStorage.getItem("accessToken")
-
       const response = await fetch(ENDPOINTS.GRN_UPLOAD_MANYTOMANY, {
         method: "POST",
         headers: {
-          Authorization: accessToken ? `Bearer ${accessToken}` : "",
+          Authorization: access ? `Bearer ${access}` : "",
         },
         body: formData,
       })
@@ -76,9 +79,9 @@ export function useUploadPdfManyToMany() {
       showToast(error.message || "Unexpected error occurred", "error",6000)
       return { success: false, error: error.message }
     } finally {
-      setIsUploading(false)
+       dispatch(setLoading({ key: "manyToManyLoader", value: false }))
     }
   }
 
-  return { uploadPdf, isUploading }
+  return { uploadPdf }
 }

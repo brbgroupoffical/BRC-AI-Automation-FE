@@ -8,13 +8,15 @@ import { Play, Eye, FileText, ArrowDownLeft } from "lucide-react"
 import { useToast } from "../ui/toast"
 import { MatchingModal } from "../others/fileMatchingModal"
 import { useUploadPdfManyToMany } from "../../hooks/useUploadPdfManyToMany"
+import { useSelector } from "react-redux"
 
 export default function ManyToOneScenario() {
   const [uploadedFile, setUploadedFile] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
+const { ManyToOneLoader } = useSelector((state) => state.loader)
   const { showToast, ToastContainer } = useToast()
-  const { uploadPdf, isUploading } = useUploadPdfManyToMany()
+  const { uploadPdf } = useUploadPdfManyToMany()
 
   const handleFileUpload = (file) => {
     if (!file) {
@@ -93,11 +95,11 @@ export default function ManyToOneScenario() {
             <div className="flex flex-col space-y-3">
               <Button
                 onClick={handleStartMatching}
-                disabled={!uploadedFile || isUploading}
+                disabled={!uploadedFile || ManyToOneLoader}
                 className="w-full bg-green-600 hover:bg-green-700 text-white flex items-center justify-center"
                 size="lg"
               >
-                {isUploading ? (
+                {ManyToOneLoader ? (
                   <div className="flex items-center space-x-2">
                     <svg
                       className="animate-spin h-5 w-5 text-white"
