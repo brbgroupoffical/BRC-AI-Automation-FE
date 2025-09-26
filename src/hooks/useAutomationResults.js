@@ -64,7 +64,7 @@ export function useAutomationResults() {
 
   useEffect(() => {
     fetchResults()
-    const interval = setInterval(() => fetchResults(), 2 * 60 * 1000)
+    const interval = setInterval(() => fetchResults(), 5 * 60 * 1000)
       // const interval = setInterval(() => fetchResults(), 10 * 1000)
 
 

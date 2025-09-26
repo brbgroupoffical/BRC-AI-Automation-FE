@@ -63,7 +63,7 @@ const { user, logout } = useAuth()
   const result = await logout()
   if (result.success) {
     showToast({ title: "Logged out successfully!" })
-    navigate("/login")   
+    navigate("/")   
   } else {
     showToast({ title: "Logout failed", variant: "destructive" })
   }

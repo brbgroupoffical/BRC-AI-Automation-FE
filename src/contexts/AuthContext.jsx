@@ -6,6 +6,8 @@ import { useToast } from "../components/ui/toast"
 const AuthContext = createContext()
 
 export function useAuth() {
+    const { showToast } = useToast()   // 👈 add this
+
   const context = useContext(AuthContext)
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider")
@@ -34,7 +36,7 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-
+const { showToast } = useToast()
 
     useEffect(() => {
   const accessToken = localStorage.getItem("accessToken")
@@ -62,7 +64,7 @@ export function AuthProvider({ children }) {
     })
 
     const data = await response.json()
-    console.log("Login API response:", data)
+    // console.log("Login API response:", data)
 
     if (!response.ok) {
       const errors = []
@@ -128,67 +130,128 @@ const register = async (username, email, password1, password2) => {
 
 
 
-const logout = async () => {
-  try {
-    const refreshToken = localStorage.getItem("refreshToken")
-    const accessToken = localStorage.getItem("accessToken")
+// const logout = async () => {
+//   try {
+//     const refreshToken = localStorage.getItem("refreshToken")
+//     const accessToken = localStorage.getItem("accessToken")
 
-    const response = await fetch(ENDPOINTS.LOGOUT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: accessToken ? `Bearer ${accessToken}` : "",
-      },
-      body: JSON.stringify({ refresh: refreshToken }),
-    })
+//     const response = await fetch(ENDPOINTS.LOGOUT, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: accessToken ? `Bearer ${accessToken}` : "",
+//       },
+//       body: JSON.stringify({ refresh: refreshToken }),
+//     })
 
-    // 👇 safely parse response (205 has no body)
-    let data = null
+//     // 👇 safely parse response (205 has no body)
+//     let data = null
+//     try {
+//       data = await response.json()
+//     } catch (err) {
+//       data = null
+//     }
+
+//     console.log("Logout API response:", data)
+
+//     // 🔐 Handle unauthorized with token expired
+//     if (response.status === 401) {
+//       if (Array.isArray(data?.messages)) {
+//         const expiredMsg = data.messages.find(
+//           (msg) => msg?.message?.toLowerCase().includes("expired")
+//         )
+//         if (expiredMsg) {
+//           showToast(`message: ${expiredMsg.message}`, "error")
+//           return { success: false, error: expiredMsg.message }
+//         }
+//       }
+
+//       if (data?.detail) {
+//         showToast(data.detail, "error")
+//         return { success: false, error: data.detail }
+//       }
+//     }
+
+//     // ❌ Generic failure
+//     if (!response.ok) {
+//       showToast(data?.detail || "Logout failed", "error")
+//       return { success: false, errors: [data?.detail || "Logout failed"] }
+//     }
+
+//     // ✅ Clear tokens & session
+//     localStorage.removeItem("accessToken")
+//     localStorage.removeItem("refreshToken")
+//     setUser(null)
+//     setIsAuthenticated(false)
+
+//     return { success: true }
+//   } catch (error) {
+//     console.error("Logout API error:", error)
+//     return { success: false, errors: [error.message] }
+//   }
+// }
+
+  const logout = async () => {
     try {
-      data = await response.json()
-    } catch (err) {
-      data = null
-    }
+      const refreshToken = localStorage.getItem("refreshToken")
+      const accessToken = localStorage.getItem("accessToken")
 
-    console.log("Logout API response:", data)
+      const response = await fetch(ENDPOINTS.LOGOUT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: accessToken ? `Bearer ${accessToken}` : "",
+        },
+        body: JSON.stringify({ refresh: refreshToken }),
+      })
 
-    // 🔐 Handle unauthorized with token expired
-    if (response.status === 401) {
-      if (Array.isArray(data?.messages)) {
-        const expiredMsg = data.messages.find(
-          (msg) => msg?.message?.toLowerCase().includes("expired")
-        )
-        if (expiredMsg) {
-          showToast(`message: ${expiredMsg.message}`, "error")
-          return { success: false, error: expiredMsg.message }
-        }
+      let data = null
+      try {
+        data = await response.json()
+      } catch (err) {
+        data = null
       }
 
-      if (data?.detail) {
-        showToast(data.detail, "error")
-        return { success: false, error: data.detail }
+      console.log("Logout API response:", data)
+
+      // 🔐 Handle unauthorized
+      if (response.status === 401) {
+        const errorMessage =
+          data?.detail ||
+          data?.messages?.find((m) =>
+            m?.message?.toLowerCase().includes("expired")
+          )?.message ||
+          "Session expired, please log in again"
+
+        // clear + notify + redirect
+        localStorage.removeItem("accessToken")
+        localStorage.removeItem("refreshToken")
+        setUser(null)
+        setIsAuthenticated(false)
+        showToast(errorMessage, "error")   // ✅ show toast message
+        window.location.href = "/"
+        return { success: false, error: errorMessage }
       }
+
+      // ❌ Generic failure
+      if (!response.ok) {
+        showToast(data?.detail || "Logout failed", "error")
+        return { success: false, error: data?.detail || "Logout failed" }
+      }
+
+      // ✅ Success
+      localStorage.removeItem("accessToken")
+      localStorage.removeItem("refreshToken")
+      setUser(null)
+      setIsAuthenticated(false)
+      showToast("Logged out successfully!", "success")  // ✅ toast for success
+      return { success: true }
+    } catch (error) {
+      console.error("Logout API error:", error)
+      showToast(error.message || "Unexpected error", "error")
+      return { success: false, error: error.message }
     }
-
-    // ❌ Generic failure
-    if (!response.ok) {
-      showToast(data?.detail || "Logout failed", "error")
-      return { success: false, errors: [data?.detail || "Logout failed"] }
-    }
-
-    // ✅ Clear tokens & session
-    localStorage.removeItem("accessToken")
-    localStorage.removeItem("refreshToken")
-    setUser(null)
-    setIsAuthenticated(false)
-
-    return { success: true }
-  } catch (error) {
-    console.error("Logout API error:", error)
-    return { success: false, errors: [error.message] }
   }
-}
-
 
 
 
