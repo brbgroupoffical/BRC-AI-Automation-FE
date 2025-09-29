@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
-import { ArrowRightLeft, ArrowUpRight, ArrowDownLeft, BarChart3, Settings, LogOut, User } from "lucide-react"
+import { ArrowRightLeft, ArrowUpRight, ArrowDownLeft, BarChart3, Settings, LogOut, User  ,LayoutDashboard} from "lucide-react"
 import { cn } from "../lib/utils"
 import { useToast } from "./ui/toast"
 import { useAuth } from "../contexts/AuthContext"
@@ -8,6 +8,9 @@ import { Button } from "./ui/button"
 
 
 const scenarios = [
+  
+  
+  
   {
     id: "one-to-one",
     name: "1:1 AP Invoice",
@@ -42,13 +45,14 @@ const otherItems = [
     path: "/results",
     description: "View Processing Results",
   },
-  // {
-  //   id: "settings",
-  //   name: "Settings",
-  //   icon: Settings,
-  //   path: "/settings",
-  //   description: "Application Settings",
-  // },
+  {
+    id: "dashboard",
+    name: "Dashboard",
+    icon: LayoutDashboard,
+    path: "/dashboard",
+    description: "Data visualization",
+    available: true,
+  },
 
 ]
 

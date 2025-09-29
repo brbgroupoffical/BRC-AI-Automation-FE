@@ -3,6 +3,7 @@ import ResultsPage from "../components/ResultsPage"
 import ManyToOneScenario from "../components/scenarios/ManyToOneScenario"
 import OneToManyScenario from "../components/scenarios/OneToManyScenario"
 import OneToOneScenario from "../components/scenarios/OneToOneScenario"
+import Dashboard from "../components/Dashboard/dashboard"
 import Register from "../pages/Register"
 import Login from "../pages/Login"
 import ProtectedRoute from "./ProtectedRoute"
@@ -20,6 +21,7 @@ export default function Router() {
         <Route path="/scenarios/one-to-many" element={<OneToManyScenario />} />
         <Route path="/scenarios/many-to-one" element={<ManyToOneScenario />} />
         <Route path="/results" element={<ResultsPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
     </Routes>
   )
