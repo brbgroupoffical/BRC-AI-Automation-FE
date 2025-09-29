@@ -393,18 +393,14 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50">
+    <div className="min-h-screen ">
       {/* Header */}
-      <header className="bg-white shadow-lg border-b-4 border-emerald-500">
-        <div className="px-8 py-7">
+      <header className=" ">
+        <div className="px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-black text-gray-900 tracking-tight">Analytics Dashboard</h1>
-              <p className="text-gray-600 mt-2 font-medium">Monitor your performance metrics in real-time</p>
-            </div>
-            <div className="flex items-center space-x-3 bg-emerald-100 px-5 py-2.5 rounded-full shadow-sm">
-              <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-bold text-emerald-700">Live Data</span>
+              <h1 className="text-3xl font-black text-gray-800 tracking-tight">Analytics Dashboard</h1>
+              <p className="text-gray-500 mt-2 font-medium">Monitor your performance metrics in real-time</p>
             </div>
           </div>
         </div>
