@@ -1,15 +1,17 @@
-import { useState } from "react"
+import { useState , useEffect} from "react"
 import { Navigate, Link } from "react-router-dom"
-import { useAuth } from "../contexts/AuthContext"
+import { useAuth } from "../hooks/useAuth"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { useToast } from "../components/ui/toast"
+import {Eye , EyeOff} from "lucide-react"
 
 export default function Login() {
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const { login, isAuthenticated } = useAuth()
@@ -44,6 +46,11 @@ export default function Login() {
 
     setIsLoading(false)
   }
+
+  
+const togglePassword = () => {
+  setShowPassword(!showPassword);
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 p-4">
@@ -90,19 +97,33 @@ export default function Login() {
             </div>
             {/* Password field */}
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
+  <label htmlFor="password" className="text-sm font-medium">
+    Password
+  </label>
+  <div className="relative">
+    <Input
+      id="password"
+      type={showPassword ? "text" : "password"}
+      placeholder="Enter your password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+      className="focus:ring-green-500 focus:border-green-500 pr-10"
+    />
+    <button
+      type="button"
+      onClick={togglePassword}
+      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+    >
+      {showPassword ? (
+        <EyeOff className="h-4 w-4" />
+      ) : (
+        <Eye className="h-4 w-4" />
+      )}
+    </button>
+  </div>
+</div>
+
             {error && <div className="text-sm text-red-600 bg-red-50 p-2 rounded">{error}</div>}
             <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign In"}

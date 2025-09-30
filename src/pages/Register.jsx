@@ -1,10 +1,11 @@
 import { useState ,useEffect  } from "react"
 import { Navigate, Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../contexts/AuthContext"
+import { useAuth } from "../hooks/useAuth"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { useToast } from "../components/ui/toast"
+import {Eye , EyeOff} from "lucide-react"
 
 export default function Register() {
   const [username, setUsername] = useState("")
@@ -13,6 +14,8 @@ export default function Register() {
   const [password2, setPassword2] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [showPassword1, setShowPassword1] = useState(false)
+  const [showPassword2, setShowPassword2] = useState(false)
   const { register, isAuthenticated } = useAuth()
   const { showToast, ToastContainer } = useToast()
   const navigate = useNavigate()
@@ -25,7 +28,7 @@ useEffect(() => {
   if (error) {
     const timer = setTimeout(() => {
       setError("") // hide after 2 seconds
-    }, 2000)
+    }, 3000)
 
     return () => clearTimeout(timer) // cleanup
   }
@@ -118,6 +121,14 @@ const handleSubmit = async (e) => {
 }
 
 
+  const togglePassword1 = () => {
+    setShowPassword1(!showPassword1)
+  }
+
+  const togglePassword2 = () => {
+    setShowPassword2(!showPassword2)
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 p-4">
       <ToastContainer />
@@ -161,32 +172,61 @@ const handleSubmit = async (e) => {
             </div>
             <div className="space-y-2">
               <label htmlFor="password1" className="text-sm font-medium">
-                Password
+                Password <span className="text-gray-400">(must be at least 8 characters)</span>
               </label>
-              <Input
-                id="password1"
-                type="password"
-                placeholder="Enter your password"
-                value={password1}
-                onChange={(e) => setPassword1(e.target.value)}
-                required
-                className="focus:ring-green-500 focus:border-green-500"
-              />
+              <div className="relative">
+                <Input
+                  id="password1"
+                  type={showPassword1 ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password1}
+                  onChange={(e) => setPassword1(e.target.value)}
+                  required
+                  className="focus:ring-green-500 focus:border-green-500 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={togglePassword1}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword1 ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
+
+
             <div className="space-y-2">
               <label htmlFor="password2" className="text-sm font-medium">
-                Confirm Password
+                Confirm Password <span className="text-gray-400">(must be at least 8 characters)</span>
               </label>
-              <Input
-                id="password2"
-                type="password"
-                placeholder="Confirm your password"
-                value={password2}
-                onChange={(e) => setPassword2(e.target.value)}
-                required
-                className="focus:ring-green-500 focus:border-green-500"
-              />
+              <div className="relative">
+                <Input
+                  id="password2"
+                  type={showPassword2 ? "text" : "password"}
+                  placeholder="Confirm your password"
+                  value={password2}
+                  onChange={(e) => setPassword2(e.target.value)}
+                  required
+                  className="focus:ring-green-500 focus:border-green-500 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={togglePassword2}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword2 ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
+
             {error && (
   <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
     {error}

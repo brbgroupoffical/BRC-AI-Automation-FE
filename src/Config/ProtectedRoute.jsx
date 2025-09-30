@@ -1,13 +1,13 @@
 import { Outlet, Navigate } from "react-router-dom"
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
-import { useAuth } from "../contexts/AuthContext"
+import { useAuth } from "../hooks/useAuth"
 
 export default function ProtectedRoute() {
   const { isAuthenticated, loading } = useAuth()
 
   if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div> // ✅ wait
+    return <div className="flex items-center justify-center h-screen">Loading...</div> 
   }
 
   if (!isAuthenticated) {

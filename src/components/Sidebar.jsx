@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import { ArrowRightLeft, ArrowUpRight, ArrowDownLeft, BarChart3, Settings, LogOut, User  ,LayoutDashboard} from "lucide-react"
 import { cn } from "../lib/utils"
 import { useToast } from "./ui/toast"
-import { useAuth } from "../contexts/AuthContext"
+import { useAuth } from "../hooks/useAuth"
 import { Button } from "./ui/button"
 
 
