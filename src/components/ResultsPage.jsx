@@ -272,7 +272,7 @@ const formatScenario = (scenario) => {
               </div> */}
 
 <div>
-  <label className="text-sm font-medium text-gray-700">Automation Status</label>
+  <label className="text-sm font-medium text-gray-700"> Status</label>
   <div className="mt-1 flex items-center space-x-2">
     {getStatusIcon(selectedResult.automationStatus)}
     {getStatusBadge(selectedResult.automationStatus)}
