@@ -1,43 +1,52 @@
 import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { Activity, CheckCircle, XCircle, TrendingUp, ArrowUpRight, ArrowDownRight, BarChart3 } from 'lucide-react';
+import { Activity, CheckCircle, XCircle, TrendingUp, ArrowUpRight, ArrowDownRight, BarChart3, Calendar } from 'lucide-react';
 
 export default function Dashboard() {
   const [selectedCaseType, setSelectedCaseType] = useState('one_to_one');
+  const [overallDaysFilter, setOverallDaysFilter] = useState(7);
+  const [casesDaysFilter, setCasesDaysFilter] = useState(7);
 
-  // Overall data
-  const overallData = {
-    total_count: 120,
-    total_success: 90,
-    total_failed: 30
+  // Overall data with different day filters
+  const overallDataByDays = {
+    1: { total_count: 15, total_success: 12, total_failed: 3 },
+    5: { total_count: 75, total_success: 58, total_failed: 17 },
+    7: { total_count: 120, total_success: 90, total_failed: 30 }
   };
 
-  const casesData = {
-    one_to_one: { case_type: "one_to_one", total: 60, success: 50, failed: 10 },
-    one_to_many: { case_type: "one_to_many", total: 25, success: 20, failed: 5 },
-    many_to_one: { case_type: "many_to_one", total: 15, success: 10, failed: 5 },
-    invoice_not_matching: {
-      case_type: "invoice_not_matching",
-      total: 10,
-      success: 5,
-      failed: 5,
+  // Cases data with different day filters
+  const casesDataByDays = {
+    1: {
+      one_to_one: { case_type: "one_to_one", total: 8, success: 7, failed: 1 },
+      one_to_many: { case_type: "one_to_many", total: 3, success: 2, failed: 1 },
+      many_to_one: { case_type: "many_to_one", total: 2, success: 1, failed: 1 },
+      invoice_not_matching: { case_type: "invoice_not_matching", total: 1, success: 1, failed: 0 },
+      foreign_suppliers_invoices: { case_type: "foreign_suppliers_invoices", total: 1, success: 1, failed: 0 },
+      landed_cost: { case_type: "landed_cost", total: 0, success: 0, failed: 0 },
+      services_invoices: { case_type: "services_invoices", total: 0, success: 0, failed: 0 }
     },
-    foreign_suppliers_invoices: {
-      case_type: "foreign_suppliers_invoices",
-      total: 5,
-      success: 3,
-      failed: 2,
+    5: {
+      one_to_one: { case_type: "one_to_one", total: 38, success: 32, failed: 6 },
+      one_to_many: { case_type: "one_to_many", total: 15, success: 12, failed: 3 },
+      many_to_one: { case_type: "many_to_one", total: 10, success: 7, failed: 3 },
+      invoice_not_matching: { case_type: "invoice_not_matching", total: 6, success: 3, failed: 3 },
+      foreign_suppliers_invoices: { case_type: "foreign_suppliers_invoices", total: 3, success: 2, failed: 1 },
+      landed_cost: { case_type: "landed_cost", total: 2, success: 1, failed: 1 },
+      services_invoices: { case_type: "services_invoices", total: 1, success: 1, failed: 0 }
     },
-    landed_cost: { case_type: "landed_cost", total: 3, success: 1, failed: 2 },
-    services_invoices: {
-      case_type: "services_invoices",
-      total: 2,
-      success: 1,
-      failed: 1,
-    },
+    7: {
+      one_to_one: { case_type: "one_to_one", total: 60, success: 50, failed: 10 },
+      one_to_many: { case_type: "one_to_many", total: 25, success: 20, failed: 5 },
+      many_to_one: { case_type: "many_to_one", total: 15, success: 10, failed: 5 },
+      invoice_not_matching: { case_type: "invoice_not_matching", total: 10, success: 5, failed: 5 },
+      foreign_suppliers_invoices: { case_type: "foreign_suppliers_invoices", total: 5, success: 3, failed: 2 },
+      landed_cost: { case_type: "landed_cost", total: 3, success: 1, failed: 2 },
+      services_invoices: { case_type: "services_invoices", total: 2, success: 1, failed: 1 }
+    }
   };
 
-  const currentCaseData = casesData[selectedCaseType];
+  const overallData = overallDataByDays[overallDaysFilter];
+  const currentCaseData = casesDataByDays[casesDaysFilter][selectedCaseType];
 
   // Chart data for Overall
   const overallChartData = [
@@ -51,8 +60,13 @@ export default function Dashboard() {
     { name: 'Failed', value: currentCaseData.failed, color: '#f59e0b' }
   ];
 
-  const successRate = ((overallData.total_success / overallData.total_count) * 100).toFixed(1);
-  const caseSuccessRate = ((currentCaseData.success / currentCaseData.total) * 100).toFixed(1);
+  const successRate = overallData.total_count > 0 
+    ? ((overallData.total_success / overallData.total_count) * 100).toFixed(1)
+    : '0.0';
+  
+  const caseSuccessRate = currentCaseData.total > 0
+    ? ((currentCaseData.success / currentCaseData.total) * 100).toFixed(1)
+    : '0.0';
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -66,10 +80,33 @@ export default function Dashboard() {
     return null;
   };
 
+  const DayFilterButtons = ({ selectedDays, onSelectDays, accentColor = 'emerald' }) => {
+    const days = [1, 5, 7];
+    
+    return (
+      <div className="flex items-center space-x-2 bg-white rounded-2xl p-1.5 shadow-md border-2 border-gray-200">
+        <Calendar className={`w-5 h-5 text-${accentColor}-600 ml-2`} />
+        {days.map((day) => (
+          <button
+            key={day}
+            onClick={() => onSelectDays(day)}
+            className={`px-4 py-2 rounded-xl font-bold text-sm transition-all duration-200 ${
+              selectedDays === day
+                ? `bg-gradient-to-r from-${accentColor}-500 to-${accentColor}-600 text-white shadow-lg`
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            {day}D
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className=" ">
+      <header>
         <div className="px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -83,11 +120,18 @@ export default function Dashboard() {
       <div className="p-8 space-y-10">
         {/* Overall Section */}
         <div className="space-y-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-2 h-10 bg-emerald-600 rounded-full shadow-lg"></div>
-            <h2 className="text-3xl font-black text-gray-900">Overall Statistics</h2>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-10 bg-emerald-600 rounded-full shadow-lg"></div>
+              <h2 className="text-3xl font-black text-gray-900">Overall Statistics</h2>
+            </div>
+            <DayFilterButtons 
+              selectedDays={overallDaysFilter} 
+              onSelectDays={setOverallDaysFilter}
+              accentColor="emerald"
+            />
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Overall Count Card */}
             <div className="lg:col-span-4 bg-white rounded-3xl shadow-xl border-2 border-emerald-100 p-8 hover:shadow-2xl hover:scale-105 transition-all duration-300">
@@ -100,7 +144,7 @@ export default function Dashboard() {
                   <Activity className="w-6 h-6 text-white" />
                 </div>
               </div>
-              
+
               <div className="space-y-4 mb-8">
                 <div className="relative overflow-hidden flex items-center justify-between p-5 bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-2xl border-2 border-emerald-200 hover:shadow-lg transition-all">
                   <div className="flex items-center space-x-4">
@@ -114,7 +158,7 @@ export default function Dashboard() {
                   </div>
                   <ArrowUpRight className="w-6 h-6 text-emerald-600" />
                 </div>
-                
+
                 <div className="relative overflow-hidden flex items-center justify-between p-5 bg-gradient-to-r from-red-50 to-red-100 rounded-2xl border-2 border-red-200 hover:shadow-lg transition-all">
                   <div className="flex items-center space-x-4">
                     <div className="bg-red-500 p-3 rounded-xl shadow-md">
@@ -135,8 +179,8 @@ export default function Dashboard() {
                   <span className="text-2xl font-black text-emerald-600">{successRate}%</span>
                 </div>
                 <div className="relative w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                  <div 
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full shadow-lg transition-all duration-1000 ease-out" 
+                  <div
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full shadow-lg transition-all duration-1000 ease-out"
                     style={{ width: `${successRate}%` }}
                   ></div>
                 </div>
@@ -145,7 +189,6 @@ export default function Dashboard() {
 
             {/* Overall Charts */}
             <div className="lg:col-span-8">
-              {/* Bar Chart */}
               <div className="bg-white rounded-3xl shadow-xl border-2 border-emerald-100 p-8 hover:shadow-2xl transition-all duration-300">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center space-x-3">
@@ -171,14 +214,14 @@ export default function Dashboard() {
                 <ResponsiveContainer width="100%" height={320}>
                   <BarChart data={overallChartData} barSize={80}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-                    <XAxis 
-                      dataKey="name" 
-                      stroke="#9ca3af" 
+                    <XAxis
+                      dataKey="name"
+                      stroke="#9ca3af"
                       tick={{ fill: '#374151', fontSize: 13, fontWeight: 700 }}
                       axisLine={{ stroke: '#d1d5db', strokeWidth: 2 }}
                     />
-                    <YAxis 
-                      stroke="#9ca3af" 
+                    <YAxis
+                      stroke="#9ca3af"
                       tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 600 }}
                       axisLine={false}
                     />
@@ -203,25 +246,33 @@ export default function Dashboard() {
               <h2 className="text-3xl font-black text-gray-900">Case Type Analysis</h2>
             </div>
             
-            {/* Dropdown */}
-            <div className="relative">
-              <select
-                value={selectedCaseType}
-                onChange={(e) => setSelectedCaseType(e.target.value)}
-                className="appearance-none bg-white border-3 border-green-200 rounded-2xl px-8 py-4 pr-14 text-gray-900 font-bold focus:outline-none focus:ring-4 focus:ring-green-300 focus:border-green-400 cursor-pointer hover:border-green-400 hover:shadow-lg transition-all shadow-md text-base"
-              >
-                <option value="one_to_one">One to One</option>
-                <option value="one_to_many">One to Many</option>
-                <option value="many_to_one">Many to One</option>
-                <option value="invoice_not_matching">Invoice Not Matching</option>
-                <option value="foreign_suppliers_invoices">Foreign Suppliers Invoices</option>
-                <option value="landed_cost">Landed Cost</option>
-                <option value="services_invoices">Services Invoices</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-green-600">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
-                </svg>
+            <div className="flex items-center space-x-4 flex-wrap gap-4">
+              <DayFilterButtons 
+                selectedDays={casesDaysFilter} 
+                onSelectDays={setCasesDaysFilter}
+                accentColor="green"
+              />
+              
+              {/* Dropdown */}
+              <div className="relative">
+                <select
+                  value={selectedCaseType}
+                  onChange={(e) => setSelectedCaseType(e.target.value)}
+                  className="appearance-none bg-white border-3 border-green-200 rounded-2xl px-8 py-4 pr-14 text-gray-900 font-bold focus:outline-none focus:ring-4 focus:ring-green-300 focus:border-green-400 cursor-pointer hover:border-green-400 hover:shadow-lg transition-all shadow-md text-base"
+                >
+                  <option value="one_to_one">One to One</option>
+                  <option value="one_to_many">One to Many</option>
+                  <option value="many_to_one">Many to One</option>
+                  <option value="invoice_not_matching">Invoice Not Matching</option>
+                  <option value="foreign_suppliers_invoices">Foreign Suppliers Invoices</option>
+                  <option value="landed_cost">Landed Cost</option>
+                  <option value="services_invoices">Services Invoices</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-green-600">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
@@ -238,8 +289,8 @@ export default function Dashboard() {
                   <Activity className="w-6 h-6 text-white" />
                 </div>
               </div>
-              
-              <div className="mb-8 p-5 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl  shadow-sm">
+
+              <div className="mb-8 p-5 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl shadow-sm">
                 <p className="text-xs text-green-700 font-black uppercase tracking-wider mb-2">Case Type</p>
                 <p className="text-xl font-black text-green-900 capitalize">{currentCaseData.case_type.replace(/_/g, ' ')}</p>
               </div>
@@ -257,7 +308,7 @@ export default function Dashboard() {
                   </div>
                   <ArrowUpRight className="w-6 h-6 text-emerald-600" />
                 </div>
-                
+
                 <div className="relative overflow-hidden flex items-center justify-between p-5 bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl border-2 border-amber-200 hover:shadow-lg transition-all">
                   <div className="flex items-center space-x-4">
                     <div className="bg-amber-500 p-3 rounded-xl shadow-md">
@@ -278,8 +329,8 @@ export default function Dashboard() {
                   <span className="text-2xl font-black text-green-600">{caseSuccessRate}%</span>
                 </div>
                 <div className="relative w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                  <div 
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-lg transition-all duration-1000 ease-out" 
+                  <div
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-lg transition-all duration-1000 ease-out"
                     style={{ width: `${caseSuccessRate}%` }}
                   ></div>
                 </div>
@@ -288,7 +339,6 @@ export default function Dashboard() {
 
             {/* Case Charts */}
             <div className="lg:col-span-8">
-              {/* Bar Chart */}
               <div className="bg-white rounded-3xl shadow-xl border-2 border-green-100 p-8 hover:shadow-2xl transition-all duration-300">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center space-x-3">
@@ -314,14 +364,14 @@ export default function Dashboard() {
                 <ResponsiveContainer width="100%" height={320}>
                   <BarChart data={casesChartData} barSize={80}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-                    <XAxis 
-                      dataKey="name" 
-                      stroke="#9ca3af" 
+                    <XAxis
+                      dataKey="name"
+                      stroke="#9ca3af"
                       tick={{ fill: '#374151', fontSize: 13, fontWeight: 700 }}
                       axisLine={{ stroke: '#d1d5db', strokeWidth: 2 }}
                     />
-                    <YAxis 
-                      stroke="#9ca3af" 
+                    <YAxis
+                      stroke="#9ca3af"
                       tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 600 }}
                       axisLine={false}
                     />

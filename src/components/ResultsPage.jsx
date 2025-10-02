@@ -147,7 +147,16 @@ const formatScenario = (scenario) => {
                       <td className="py-4 px-4">
                         <div className="flex items-center space-x-2">
                           <FileText className="w-4 h-4 text-gray-500" />
-                          <span className="font-medium text-sm text-gray-900">{result.fileName}</span>
+                          {/* <span className="font-medium text-sm text-gray-900">{result.fileName}</span> */}
+                          <a 
+  href={result.fileUrl} 
+  target="_blank" 
+  rel="noopener noreferrer" 
+  className="font-medium text-sm text-gray-900 hover:underline"
+>
+  {result.fileName}
+</a>
+
                         </div>
                       </td>
                       {/* <td className="py-4 px-4">

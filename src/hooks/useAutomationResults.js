@@ -38,6 +38,7 @@ export function useAutomationResults() {
       const formatted = data.results.map(item => ({
         id: item.id,
         fileName: item.filename,
+        fileUrl: item.file_url,
         automationStatus: item.status,
         scenario: item.case_type,
         scenarioName: item.case_type?.replaceAll("_", " ") || "N/A",
