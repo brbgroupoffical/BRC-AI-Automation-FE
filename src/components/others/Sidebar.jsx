@@ -1,16 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
-import { ArrowDownLeft, ArrowRightLeft, ArrowUpRight, BarChart3, LogOut } from "lucide-react"
+import { ArrowDownLeft, ArrowRightLeft, ArrowUpRight, BarChart3, LogOut,LayoutDashboard } from "lucide-react"
 import { cn } from "../../lib/utils"
 import { useToast } from "../ui/toast"
 import { useAuth } from "../../hooks/useAuth"
-// import { useAuth } from "../../contexts/AuthContext"
 
 
 const scenarios = [
-  
-  
-  
   {
     id: "one-to-one",
     name: "1:1 AP Invoice",

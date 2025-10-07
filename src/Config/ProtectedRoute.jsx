@@ -7,8 +7,6 @@ export default function ProtectedRoute() {
   const { isAuthenticated } = useSelector((state) => state.user)
 
 
-  console.log("isAuthenticated:", isAuthenticated)
-
   if (!isAuthenticated) {
     return <Navigate to="/" replace />
   }

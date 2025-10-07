@@ -1,19 +1,22 @@
-import { useState, useEffect } from "react"
-import { ENDPOINTS } from "../utils/endpoint"
+import { useState } from "react"
 import { useToast } from "../components/ui/toast"
-
+import { ENDPOINTS } from "../utils/endpoint"
+import { useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
+import { removeUser } from "../feature/userSlice"
 export function useDashboard() {
+
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [caseLoading,setIsCaseLoading] = useState(false)
   const [error, setError] = useState(null)
   const { showToast } = useToast()
-
+  const { access } = useSelector((state) => state.user)
+  const dispatch = useDispatch()
   const fetchStats = async (selectedDays) => {
     console.log(selectedDays)
     try {
       setLoading(true)
-      const accessToken = localStorage.getItem("accessToken")
 
       const url = `${ENDPOINTS.TOTAL_AUTOMATIONS}?days=${selectedDays}`
 
@@ -21,12 +24,12 @@ export function useDashboard() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: accessToken ? `Bearer ${accessToken}` : "",
+          Authorization: access ? `Bearer ${access}` : "",
         },
       })
 
       if (res.status === 401) {
-        localStorage.removeItem("accessToken")
+        dispatch(removeUser())
         showToast("Session expired, please log in again", "error")
         window.location.href = "/"
         return
@@ -54,7 +57,6 @@ export function useDashboard() {
 const fetchCaseStats = async (caseType, selectedDays) => {
     try {
       setLoading(true)
-      const accessToken = localStorage.getItem("accessToken")
       const url = `${ENDPOINTS.CASE_TYPE_STATS}/${caseType}?days=${selectedDays}`
       console.log(url)
 
@@ -62,7 +64,7 @@ const fetchCaseStats = async (caseType, selectedDays) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: accessToken ? `Bearer ${accessToken}` : "",
+          Authorization: access ? `Bearer ${access}` : "",
         },
       })
 
