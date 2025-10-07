@@ -2,13 +2,15 @@ import { useState, useEffect } from "react"
 import { ENDPOINTS } from "../utils/endpoint"
 import { useToast } from "../components/ui/toast"
 
-export function useOverallStats(days = 7) {
+export function useDashboard() {
   const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [caseLoading,setIsCaseLoading] = useState(false)
   const [error, setError] = useState(null)
   const { showToast } = useToast()
 
-  const fetchStats = async (selectedDays = days) => {
+  const fetchStats = async (selectedDays) => {
+    console.log(selectedDays)
     try {
       setLoading(true)
       const accessToken = localStorage.getItem("accessToken")
@@ -36,6 +38,7 @@ export function useOverallStats(days = 7) {
       if (result.error) {
         throw new Error(result.error)
       }
+      console.log("result inside hook",result)
 
       setData(result)
       setError(null)
@@ -47,9 +50,32 @@ export function useOverallStats(days = 7) {
     }
   }
 
-  useEffect(() => {
-    fetchStats(days)
-  }, [days])
+  
+const fetchCaseStats = async (caseType, selectedDays) => {
+    try {
+      setLoading(true)
+      const accessToken = localStorage.getItem("accessToken")
+      const url = `${ENDPOINTS.CASE_TYPE_STATS}/${caseType}?days=${selectedDays}`
+      console.log(url)
 
-  return { data, loading, error, refetch: fetchStats }
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: accessToken ? `Bearer ${accessToken}` : "",
+        },
+      })
+
+      if (!res.ok) throw new Error(`Error ${res.status}`)
+      const result = await res.json()
+      return result
+    } catch (err) {
+      showToast(`Failed to fetch case stats: ${err.message}`, "error")
+      return null
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { data, loading, error, fetchStats, fetchCaseStats,caseLoading }
 }

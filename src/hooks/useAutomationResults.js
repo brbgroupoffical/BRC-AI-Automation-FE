@@ -44,7 +44,8 @@ export function useAutomationResults() {
         scenarioName: item.case_type?.replaceAll("_", " ") || "N/A",
         // status: item.steps?.[0]?.status || item.status,
         // stepStatus: item.steps?.[0]?.status || "N/A",
-        message: item.steps?.[0]?.message || "No message available",
+        message: item.steps?.[item.steps.length - 1]?.message || "No message available",
+          steps: item.steps || [],
         createdAt: item.created_at,
       }))
 
@@ -62,14 +63,10 @@ export function useAutomationResults() {
       setLoading(false)
     }
   }
-
   useEffect(() => {
     fetchResults()
-    const interval = setInterval(() => fetchResults(), 5 * 60 * 1000)
-      // const interval = setInterval(() => fetchResults(), 10 * 1000)
-
-
-    return () => clearInterval(interval)
+      const interval = setInterval(() => fetchResults(), 10 * 1000)
+      return () => clearInterval(interval)
   }, [])
 
   return {

@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
@@ -12,12 +10,9 @@ import { useUploadPdf } from "../../hooks/useUploadPdf"
 
 export default function OneToOneScenario() {
   const [uploadedFile, setUploadedFile] = useState(null)
-  const [processingTasks, setProcessingTasks] = useState([])
-  const [taskCounter, setTaskCounter] = useState(0)
   const navigate = useNavigate()
   const { showToast, ToastContainer } = useToast()
   const { uploadPdf, isUploading } = useUploadPdf()
-
   const [showModal, setShowModal] = useState(false)
 
   const handleFileUpload = (file) => {
@@ -44,10 +39,8 @@ export default function OneToOneScenario() {
     const result = await uploadPdf(uploadedFile)
 
     if (result.success) {
-      showToast(result.data?.message || "PDF uploaded successfully!", "success")
-
+      showToast("Your PDF is uploading. Check back for results in the tracking section.", "info")
       setUploadedFile(null)
-
       setTimeout(() => {
         setShowModal(true)
       }, 1500)
@@ -74,16 +67,15 @@ export default function OneToOneScenario() {
           onShowResults={handleShowResults}
         />
 
-        
         <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
-            <ArrowRightLeft className="w-8 h-8 text-green-600" />
-            <span>1:1 AP Invoice Processing</span>
-          </h2>
-          <p className="text-gray-600 mt-2">Upload and process invoice documents for one-to-one matching</p>
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
+              <ArrowRightLeft className="w-8 h-8 text-green-600" />
+              <span>1:1 AP Invoice Processing</span>
+            </h2>
+            <p className="text-gray-600 mt-2">Upload and process invoice documents for one-to-one matching</p>
+          </div>
         </div>
-      </div>
 
         <div className="max-w-2xl mx-auto">
           <Card>
