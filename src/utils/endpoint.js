@@ -13,5 +13,10 @@ export const ENDPOINTS = {
   GRN_UPLOAD_MANYTOMANY: `${API_BASE_URL}automation/upload/many-to-many/`,
 
 
-  AUTOMATION_RESULT: `${API_BASE_URL}automation/automation-details/`
+  AUTOMATION_RESULT: `${API_BASE_URL}automation/automation-details/`,
+
+  //Dashboard
+  TOTAL_AUTOMATIONS: `${API_BASE_URL}automation/stats/total-automations/`,
+  CASE_TYPE_STATS:`${API_BASE_URL}automation/stats/case-type`
+
 }

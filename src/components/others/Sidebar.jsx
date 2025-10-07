@@ -8,6 +8,9 @@ import { useAuth } from "../../hooks/useAuth"
 
 
 const scenarios = [
+  
+  
+  
   {
     id: "one-to-one",
     name: "1:1 AP Invoice",
@@ -42,13 +45,14 @@ const otherItems = [
     path: "/results",
     description: "View Processing Results",
   },
-  // {
-  //   id: "settings",
-  //   name: "Settings",
-  //   icon: Settings,
-  //   path: "/settings",
-  //   description: "Application Settings",
-  // },
+  {
+    id: "dashboard",
+    name: "Dashboard",
+    icon: LayoutDashboard,
+    path: "/dashboard",
+    description: "Data visualization",
+    available: true,
+  },
 
 ]
 
@@ -97,7 +101,6 @@ export default function Sidebar() {
         )}
       </Link>
 
-      {/* Tooltip */}
       <div className="absolute left-16 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
         <div className="font-medium">{item.name}</div>
         <div className="text-xs text-gray-300">{item.description}</div>
@@ -111,7 +114,6 @@ export default function Sidebar() {
 
     <div className="w-20 bg-white border-r border-gray-200 flex flex-col">
       <ToastContainer />
-      {/* Logo */}
       <div className="flex items-center justify-center h-16 border-b border-gray-200">
         <img src="/assets/brc-logo.png" alt="BRC" className="h-8 w-auto" />
       </div>

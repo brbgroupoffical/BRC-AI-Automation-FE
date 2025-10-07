@@ -7,12 +7,12 @@ import { CheckCircle, Clock, AlertCircle, FileText, Eye, RefreshCw, X, Loader2 }
 import { Toast, useToast } from "../ui/toast"
 
 export default function ResultsPage() {
-    const { results, loading, error, refetch, next, previous, fetchPage } = useAutomationResults()
+  const { results, loading, error, refetch, next, previous, fetchPage } = useAutomationResults()
 
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [selectedResult, setSelectedResult] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-const { showToast ,ToastContainer } = useToast()
+  const { showToast, ToastContainer } = useToast()
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -76,10 +76,10 @@ const { showToast ,ToastContainer } = useToast()
     setIsModalOpen(false)
   }
 
-const formatScenario = (scenario) => {
-  if (!scenario) return "N/A"
-  return scenario.replaceAll("_", "-").toUpperCase()
-}
+  const formatScenario = (scenario) => {
+    if (!scenario) return "N/A"
+    return scenario.replaceAll("_", "-").toUpperCase()
+  }
 
 
   return (
@@ -147,7 +147,16 @@ const formatScenario = (scenario) => {
                       <td className="py-4 px-4">
                         <div className="flex items-center space-x-2">
                           <FileText className="w-4 h-4 text-gray-500" />
-                          <span className="font-medium text-sm text-gray-900">{result.fileName}</span>
+                          {/* <span className="font-medium text-sm text-gray-900">{result.fileName}</span> */}
+                          <a
+                            href={result.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-sm text-gray-900 hover:underline"
+                          >
+                            {result.fileName}
+                          </a>
+
                         </div>
                       </td>
                       {/* <td className="py-4 px-4">
@@ -156,16 +165,16 @@ const formatScenario = (scenario) => {
                           {getStatusBadge(result.status)}
                         </div>
                       </td> */}
-                       {/* ✅ Automation Status */}
-        <td className="py-4 px-4">
-          <div className="flex items-center space-x-2">
-            {getStatusIcon(result.automationStatus)}
-            {getStatusBadge(result.automationStatus)}
-          </div>
-        </td>
+                      {/* ✅ Automation Status */}
+                      <td className="py-4 px-4">
+                        <div className="flex items-center space-x-2">
+                          {getStatusIcon(result.automationStatus)}
+                          {getStatusBadge(result.automationStatus)}
+                        </div>
+                      </td>
 
-        {/* ✅ Step Status */}
-        {/* <td className="py-4 px-4">
+                      {/* ✅ Step Status */}
+                      {/* <td className="py-4 px-4">
           <div className="flex items-center space-x-2">
             {getStatusIcon(result.stepStatus)}
             {getStatusBadge(result.stepStatus)}
@@ -217,25 +226,25 @@ const formatScenario = (scenario) => {
               <p className="text-gray-600">Upload and process files to see results here</p>
             </div>
           )}
-           {/* Pagination Controls */}
-      <div className="flex  items-center justify-end mt-4 space-x-2">
-        <Button
-          onClick={() => previous && fetchPage(previous)}
-          disabled={!previous}
-          variant="outline"
-          size="sm"
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => next && fetchPage(next)}
-          disabled={!next}
-          variant="outline"
-          size="sm"
-        >
-          Next
-        </Button>
-      </div>
+          {/* Pagination Controls */}
+          <div className="flex  items-center justify-end mt-4 space-x-2">
+            <Button
+              onClick={() => previous && fetchPage(previous)}
+              disabled={!previous}
+              variant="outline"
+              size="sm"
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={() => next && fetchPage(next)}
+              disabled={!next}
+              variant="outline"
+              size="sm"
+            >
+              Next
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -248,17 +257,27 @@ const formatScenario = (scenario) => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-      <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
+            <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
 
               <div>
                 <label className="text-sm font-medium text-gray-700">File Name</label>
-                <p className="mt-1 text-gray-900">{selectedResult.fileName}</p>
+                <FileText className="w-4 h-4 text-gray-500" />
+                {/* <span className="font-medium text-sm text-gray-900">{result.fileName}</span> */}
+                <a
+                  href={selectedResult.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 text-gray-900 hover:underline"
+                >
+                  {selectedResult.fileName}
+                </a>
+
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700">Type</label>
                 <p className="mt-1">
                   <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-md">
-                    
+
                     {formatScenario(selectedResult.scenario)}
                   </span>
                 </p>
@@ -271,14 +290,14 @@ const formatScenario = (scenario) => {
                 </div>
               </div> */}
 
-<div>
-  <label className="text-sm font-medium text-gray-700">Automation Status</label>
-  <div className="mt-1 flex items-center space-x-2">
-    {getStatusIcon(selectedResult.automationStatus)}
-    {getStatusBadge(selectedResult.automationStatus)}
-  </div>
-</div>
-{/* <div>
+              <div>
+                <label className="text-sm font-medium text-gray-700"> Status</label>
+                <div className="mt-1 flex items-center space-x-2">
+                  {getStatusIcon(selectedResult.automationStatus)}
+                  {getStatusBadge(selectedResult.automationStatus)}
+                </div>
+              </div>
+              {/* <div>
   <label className="text-sm font-medium text-gray-700">Step Status</label>
   <div className="mt-1 flex items-center space-x-2">
     {getStatusIcon(selectedResult.stepStatus)}
@@ -286,11 +305,47 @@ const formatScenario = (scenario) => {
   </div>
 </div> */}
 
+              {/* ✅ Message History Dropdown */}
+<div>
+  <label className="text-sm font-medium text-gray-700">Message History</label>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700">Message</label>
-                <p className="mt-1 text-gray-900">{selectedResult.message || "No message available"}</p>
-              </div>
+  {selectedResult?.steps?.length > 0 ? (
+    <details className="mt-2 bg-gray-50 rounded-md p-3 border border-gray-200">
+      <summary className="cursor-pointer text-sm font-semibold text-gray-800">
+        View all steps ({selectedResult.steps.length})
+      </summary>
+      <ul className="mt-2 space-y-2 text-sm text-gray-700 max-h-40 overflow-y-auto">
+        {selectedResult.steps.map((step, idx) => (
+          <li key={idx} className="border-b border-gray-100 pb-1">
+            <div className="flex justify-between">
+              <span className="font-medium text-gray-900">{step.step_name}</span>
+              <span
+                className={`text-xs px-2 py-0.5 rounded ${
+                  step.status === "success"
+                    ? "bg-green-100 text-green-800"
+                    : step.status === "failed"
+                    ? "bg-red-100 text-red-800"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {step.status}
+              </span>
+            </div>
+            <p className="text-xs mt-1 text-gray-600 whitespace-pre-wrap">
+              {step.message}
+            </p>
+            <p className="text-[11px] text-gray-400">
+              {new Date(step.updated_at).toLocaleString()}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </details>
+  ) : (
+    <p className="mt-1 text-gray-500 text-sm">No step history available</p>
+  )}
+</div>
+
               <div>
                 <label className="text-sm font-medium text-gray-700">Created At</label>
                 <p className="mt-1 text-gray-900">{formatDateTime(selectedResult.createdAt)}</p>

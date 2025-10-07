@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
@@ -13,8 +11,6 @@ import { useSelector } from "react-redux"
 export default function OneToOneScenario() {
   const { oneToOneLoader } = useSelector((state) => state.loader)
   const [uploadedFile, setUploadedFile] = useState(null)
-  const [processingTasks, setProcessingTasks] = useState([])
-  const [taskCounter, setTaskCounter] = useState(0)
   const navigate = useNavigate()
   const { showToast, ToastContainer } = useToast()
   const { uploadPdf } = useUploadPdf()
@@ -45,10 +41,8 @@ export default function OneToOneScenario() {
     const result = await uploadPdf(uploadedFile)
 
     if (result.success) {
-      showToast(result.data?.message || "PDF uploaded successfully!", "success")
-
+      showToast("Your PDF is uploading. Check back for results in the tracking section.", "info")
       setUploadedFile(null)
-
       setTimeout(() => {
         setShowModal(true)
       }, 1500)
@@ -74,7 +68,6 @@ export default function OneToOneScenario() {
           fileName={uploadedFile?.name}
           onShowResults={handleShowResults}
         />
-
 
         <div className="flex items-center justify-between">
           <div>

@@ -60,6 +60,14 @@ export default function Register() {
     }
   }, [isAuthenticated, navigate])
 
+  const togglePassword1 = () => {
+    setShowPassword1(!showPassword1)
+  }
+
+  const togglePassword2 = () => {
+    setShowPassword2(!showPassword2)
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 p-4">
       <ToastContainer />
