@@ -20,13 +20,14 @@ import {
     BarChart3,
 } from "lucide-react"
 
- function OverallStatistics({
+function OverallStatistics({
     data,
     loading,
     error,
     overallDaysFilter,
     setOverallDaysFilter,
 }) {
+    console.log("Overallrenderd")
     const successRate =
         data?.total_count > 0
             ? ((data?.total_success / data?.total_count) * 100).toFixed(1)

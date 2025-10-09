@@ -4,6 +4,7 @@ import { ENDPOINTS } from "../utils/endpoint"
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { removeUser } from "../feature/userSlice"
+import { useCallback } from "react"
 export function useDashboard() {
 
   const [data, setData] = useState(null)
@@ -13,13 +14,13 @@ export function useDashboard() {
   const { showToast } = useToast()
   const { access } = useSelector((state) => state.user)
   const dispatch = useDispatch()
+  
   const fetchStats = async (selectedDays) => {
     console.log(selectedDays)
     try {
       setLoading(true)
 
       const url = `${ENDPOINTS.TOTAL_AUTOMATIONS}?days=${selectedDays}`
-
       const res = await fetch(url, {
         method: "GET",
         headers: {
@@ -54,9 +55,9 @@ export function useDashboard() {
   }
 
   
-const fetchCaseStats = async (caseType, selectedDays) => {
+ const fetchCaseStats = useCallback( async (caseType, selectedDays) => {
     try {
-      setLoading(true)
+      setIsCaseLoading(true)
       const url = `${ENDPOINTS.CASE_TYPE_STATS}/${caseType}?days=${selectedDays}`
       console.log(url)
 
@@ -75,9 +76,11 @@ const fetchCaseStats = async (caseType, selectedDays) => {
       showToast(`Failed to fetch case stats: ${err.message}`, "error")
       return null
     } finally {
-      setLoading(false)
+      setIsCaseLoading(false)
     }
-  }
+  },
+    [] // ✅ stable dependencies
+  )
 
   return { data, loading, error, fetchStats, fetchCaseStats,caseLoading }
 }
