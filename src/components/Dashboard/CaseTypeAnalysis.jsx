@@ -7,7 +7,8 @@ function CaseTypeAnalysis({
     setSelectedCaseType,
     casesDaysFilter,
     caseData,
-    setCasesDaysFilter, loading
+    setCasesDaysFilter,
+    loading
 }) {
 
     const caseSuccessRate =
@@ -43,7 +44,6 @@ function CaseTypeAnalysis({
                         <option value="one_to_one">One to One</option>
                         <option value="one_to_many">One to Many</option>
                         <option value="many_to_many">Many to One</option>
-
                     </select>
                 </div>
             </div>

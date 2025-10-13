@@ -55,7 +55,7 @@ export function useUploadPdf() {
         const errors = []
 
         if (typeof data === "object") {
-          if (data.message) errors.push(data.message) // ✅ handle "message"
+          if (data.message) errors.push(data.message) 
           if (data.detail) errors.push(data.detail)
 
           Object.keys(data).forEach((field) => {

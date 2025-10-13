@@ -8,7 +8,6 @@ import { Toast, useToast } from "../ui/toast"
 
 export default function ResultsPage() {
   const { results, loading, error, refetch, next, previous, fetchPage } = useAutomationResults()
-
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [selectedResult, setSelectedResult] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -77,7 +76,11 @@ export default function ResultsPage() {
   }
 
   const formatScenario = (scenario) => {
+    console.log(scenario)
     if (!scenario) return "N/A"
+      if (scenario === "many_to_many") {
+    scenario = "many_to_one";
+  }
     return scenario.replaceAll("_", "-").toUpperCase()
   }
 
@@ -117,14 +120,12 @@ export default function ResultsPage() {
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">Type</th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">File Name</th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700"> Status</th>
-                  {/* <th className="text-left py-3 px-4 font-semibold text-gray-700">Step Status</th> */}
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">Message</th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">Created At</th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {/* Loader Row */}
                 {loading && (
                   <tr>
                     <td colSpan="7" className="py-10 text-center text-gray-500">
