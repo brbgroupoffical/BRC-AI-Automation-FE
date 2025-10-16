@@ -19,7 +19,6 @@ export function useUploadPdfManyToMany() {
 
     try {
       dispatch(setLoading({ key: "manyToManyLoader", value: true }))
-
       const formData = new FormData()
       formData.append("file", file)
 
@@ -34,7 +33,6 @@ export function useUploadPdfManyToMany() {
       const data = await response.json()
       console.log("Upload API response (Many:Many):", data)
 
-      // 🔐 Handle unauthorized with token expired
       if (response.status === 401) {
         if (Array.isArray(data?.messages)) {
           const expiredMsg = data.messages.find(

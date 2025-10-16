@@ -6,6 +6,7 @@ import OneToOneScenario from "../components/scenarios/OneToOneScenario"
 import Dashboard from "../components/Dashboard/dashboard"
 import Register from "../pages/Register"
 import Login from "../pages/Login"
+import GrnPayloadPage from "../pages/GrnPayload"
 import ProtectedRoute from "./ProtectedRoute"
 
 export default function Router() {
@@ -22,6 +23,7 @@ export default function Router() {
         <Route path="/scenarios/many-to-one" element={<ManyToOneScenario />} />
         <Route path="/results" element={<ResultsPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/grn/:id" element={<GrnPayloadPage />} />
       </Route>
     </Routes>
   )

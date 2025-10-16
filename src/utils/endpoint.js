@@ -17,6 +17,7 @@ export const ENDPOINTS = {
 
   //Dashboard
   TOTAL_AUTOMATIONS: `${API_BASE_URL}automation/stats/total-automations/`,
-  CASE_TYPE_STATS:`${API_BASE_URL}automation/stats/case-type`
+  CASE_TYPE_STATS:`${API_BASE_URL}automation/stats/case-type`,
+  GRN_PAYLOAD: `${API_BASE_URL}automation/`,
 
 }

@@ -3,7 +3,7 @@ import { useAutomationResults } from "../../hooks/useAutomationResults"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
 import { CheckCircle, Clock, AlertCircle, FileText, Eye, RefreshCw, X, Loader2 } from "lucide-react"
-
+import { useNavigate } from "react-router-dom"
 import { Toast, useToast } from "../ui/toast"
 
 export default function ResultsPage() {
@@ -12,7 +12,7 @@ export default function ResultsPage() {
   const [selectedResult, setSelectedResult] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { showToast, ToastContainer } = useToast()
-
+ const navigate = useNavigate()
   const getStatusIcon = (status) => {
     switch (status) {
       case "success":
@@ -78,9 +78,9 @@ export default function ResultsPage() {
   const formatScenario = (scenario) => {
     console.log(scenario)
     if (!scenario) return "N/A"
-      if (scenario === "many_to_many") {
-    scenario = "many_to_one";
-  }
+    if (scenario === "many_to_many") {
+      scenario = "many_to_one";
+    }
     return scenario.replaceAll("_", "-").toUpperCase()
   }
 
@@ -196,7 +196,22 @@ export default function ResultsPage() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-green-700 border-green-200 hover:bg-green-50 bg-transparent"
+                            className={`cursor-pointer border-green-200 bg-transparent
+      ${
+        result.automationStatus === "failed"
+          ? "text-gray-400 border-gray-200 cursor-not-allowed bg-gray-50"
+          : "text-green-700 hover:bg-green-50"
+      }`}
+                          onClick={() => {
+      if (result.automationStatus !== "failed") navigate(`/grn/${result.id}`);
+    }}
+                          >
+                            View Payload
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-green-700 cursor-pointer border-green-200 hover:bg-green-50 bg-transparent"
                             onClick={() => openModal(result)}
                           >
                             <Eye className="w-3 h-3 mr-1" />
@@ -307,45 +322,44 @@ export default function ResultsPage() {
 </div> */}
 
               {/* ✅ Message History Dropdown */}
-<div>
-  <label className="text-sm font-medium text-gray-700">Message History</label>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Message History</label>
 
-  {selectedResult?.steps?.length > 0 ? (
-    <details className="mt-2 bg-gray-50 rounded-md p-3 border border-gray-200">
-      <summary className="cursor-pointer text-sm font-semibold text-gray-800">
-        View all steps ({selectedResult.steps.length})
-      </summary>
-      <ul className="mt-2 space-y-2 text-sm text-gray-700 max-h-40 overflow-y-auto">
-        {selectedResult.steps.map((step, idx) => (
-          <li key={idx} className="border-b border-gray-100 pb-1">
-            <div className="flex justify-between">
-              <span className="font-medium text-gray-900">{step.step_name}</span>
-              <span
-                className={`text-xs px-2 py-0.5 rounded ${
-                  step.status === "success"
-                    ? "bg-green-100 text-green-800"
-                    : step.status === "failed"
-                    ? "bg-red-100 text-red-800"
-                    : "bg-gray-100 text-gray-700"
-                }`}
-              >
-                {step.status}
-              </span>
-            </div>
-            <p className="text-xs mt-1 text-gray-600 whitespace-pre-wrap">
-              {step.message}
-            </p>
-            <p className="text-[11px] text-gray-400">
-              {new Date(step.updated_at).toLocaleString()}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </details>
-  ) : (
-    <p className="mt-1 text-gray-500 text-sm">No step history available</p>
-  )}
-</div>
+                {selectedResult?.steps?.length > 0 ? (
+                  <details className="mt-2 bg-gray-50 rounded-md p-3 border border-gray-200">
+                    <summary className="cursor-pointer text-sm font-semibold text-gray-800">
+                      View all steps ({selectedResult.steps.length})
+                    </summary>
+                    <ul className="mt-2 space-y-2 text-sm text-gray-700 max-h-40 overflow-y-auto">
+                      {selectedResult.steps.map((step, idx) => (
+                        <li key={idx} className="border-b border-gray-100 pb-1">
+                          <div className="flex justify-between">
+                            <span className="font-medium text-gray-900">{step.step_name}</span>
+                            <span
+                              className={`text-xs px-2 py-0.5 rounded ${step.status === "success"
+                                ? "bg-green-100 text-green-800"
+                                : step.status === "failed"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-gray-100 text-gray-700"
+                                }`}
+                            >
+                              {step.status}
+                            </span>
+                          </div>
+                          <p className="text-xs mt-1 text-gray-600 whitespace-pre-wrap">
+                            {step.message}
+                          </p>
+                          <p className="text-[11px] text-gray-400">
+                            {new Date(step.updated_at).toLocaleString()}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : (
+                  <p className="mt-1 text-gray-500 text-sm">No step history available</p>
+                )}
+              </div>
 
               <div>
                 <label className="text-sm font-medium text-gray-700">Created At</label>
