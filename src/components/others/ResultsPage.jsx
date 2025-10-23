@@ -8,6 +8,7 @@ import { Toast, useToast } from "../ui/toast"
 
 export default function ResultsPage() {
   const { results, loading, error, refetch, next, previous, fetchPage } = useAutomationResults()
+  console.log("Results:", results)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [selectedResult, setSelectedResult] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)

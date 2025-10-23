@@ -12,7 +12,7 @@ import { useToast } from "../ui/toast"
 import { useSelector } from "react-redux"
 
 export default function OneToManyScenario() {
-   const { oneToManyLoader } = useSelector((state) => state.loader)
+  const { oneToManyLoader } = useSelector((state) => state.loader)
   const [uploadedFile, setUploadedFile] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
@@ -75,7 +75,7 @@ export default function OneToManyScenario() {
         <div>
           <h2 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
             <ArrowUpRight className="w-8 h-8 text-green-600" />
-            <span>1:Many AP Invoice Processing</span>
+            <span>Many:1 AP Invoice Processing</span>
           </h2>
           <p className="text-gray-600 mt-2">Upload and process one invoice against multiple GRNs</p>
         </div>

@@ -14,7 +14,7 @@ export default function ManyToOneScenario() {
   const [uploadedFile, setUploadedFile] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
-const { ManyToOneLoader } = useSelector((state) => state.loader)
+  const { ManyToOneLoader } = useSelector((state) => state.loader)
   const { showToast, ToastContainer } = useToast()
   const { uploadPdf } = useUploadPdfManyToMany()
 
@@ -75,7 +75,7 @@ const { ManyToOneLoader } = useSelector((state) => state.loader)
         <div>
           <h2 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
             <ArrowDownLeft className="w-8 h-8 text-green-600" />
-            <span>Many:1 AP Invoice Processing</span>
+            <span>1:Many AP Invoice Processing</span>
           </h2>
           <p className="text-gray-600 mt-2">Upload and process multiple invoices against one GRN</p>
         </div>
