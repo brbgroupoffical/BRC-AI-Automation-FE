@@ -6,8 +6,10 @@ import { useDispatch } from "react-redux"
 import { setUser } from "../feature/userSlice"
 import { useSelector } from "react-redux"
 import { removeUser } from "../feature/userSlice"
+import { useNavigate } from "react-router-dom"
 export const useAuth = () => {
     const [fieldErrors, setFieldErrors] = useState({})
+    const navigate = useNavigate()
     const {
         access, refresh
     } = useSelector((state) => state.user)
@@ -68,8 +70,7 @@ export const useAuth = () => {
     }
     const logout = async () => {
         try {
-            setIsLoading(true)
-            await axios.post(
+            const response = await axios.post(
                 ENDPOINTS.LOGOUT,
                 { refresh },
                 {
@@ -78,18 +79,25 @@ export const useAuth = () => {
                         Authorization: access ? `Bearer ${access}` : "",
                     },
                 }
-            )
-            dispatch(removeUser())
-            return { success: true }
+            );
+
+            dispatch(removeUser());
+            return { success: true };
         } catch (error) {
-            console.error("Logout API error:", error)
-            if (error.response?.data?.detail) {
-                return { success: false, error: error.response.data.detail }
+            console.error("Logout API error:", error);
+            if (error.response?.status === 401) {
+                dispatch(removeUser());
+                setTimeout(() => {
+                    navigate("/");
+                }, 2000)
+                return { success: false, error: "Session expired. Please log in again." };
             }
-            return { success: false, error: error.message }
-        } finally {
-            setIsLoading(false)
+
+            if (error.response?.data?.detail) {
+                return { success: false, error: error.response.data.detail };
+            }
+            return { success: false, error: error.message || "Network error" };
         }
-    }
+    };
     return { register, login, fieldErrors, isLoading, logout }
 }

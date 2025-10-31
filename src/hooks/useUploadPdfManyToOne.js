@@ -31,7 +31,8 @@ export function useUploadPdfOneToMany() {
       const data = await response.json()
       console.log("Upload API response (1:Many):", data)
 
-      // 🔐 Handle unauthorized with token expired
+        
+
       if (response.status === 401) {
         if (Array.isArray(data?.messages)) {
           const expiredMsg = data.messages.find(

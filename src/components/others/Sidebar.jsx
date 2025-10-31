@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
-import { ArrowDownLeft, ArrowRightLeft, ArrowUpRight, BarChart3, LogOut,LayoutDashboard } from "lucide-react"
+import { ArrowDownLeft, ArrowRightLeft, ArrowUpRight, BarChart3, LogOut, LayoutDashboard } from "lucide-react"
 import { cn } from "../../lib/utils"
 import { useToast } from "../ui/toast"
 import { useAuth } from "../../hooks/useAuth"
@@ -60,17 +60,29 @@ export default function Sidebar() {
   const navigate = useNavigate()
   const { showToast, ToastContainer } = useToast()
 
-  // const { user, logout } = useAuth()
 
   const handleLogout = async () => {
-    const result = await logout()
-    if (result.success) {
-      showToast({ title: "Logged out successfully!" })
-      navigate("/")
-    } else {
-      showToast({ title: "Logout failed", variant: "destructive" })
+    try {
+      const result = await logout();
+
+      if (result.success) {
+        showToast({ title: "Logged out successfully!" });
+        navigate("/");
+      } else {
+        showToast({
+          title: result.error || "Logout failed",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Unexpected logout error:", error);
+      showToast({
+        title: error.message || "Something went wrong during logout",
+        variant: "destructive",
+      });
     }
-  }
+  };
+
 
 
 
